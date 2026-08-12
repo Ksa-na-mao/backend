@@ -1,7 +1,11 @@
 const Services = require("../../core/Services/Services");
 const dataSource = require("../../database/models");
-const auth = require("../../core/jwt/jwt.js");
+const auth = require("./jwt/jwt.js");
 const bcrypt = require("bcrypt");
+
+const BadRequest = require("../../core/Errors/BadRequest.js");
+const Forbidden = require("../../core/Errors/Forbidden.js");
+const Error404 = require("../../core/Errors/Error404.js");
 
 const userModel = dataSource["User"];
 
@@ -9,7 +13,6 @@ class UserServices extends Services {
   constructor() {
     super("User");
   }
-
   //get
 
   async getAllUsers(offset) {
@@ -35,28 +38,47 @@ class UserServices extends Services {
   //post
 
   async signUp(userData) {
-    console.log(userData);
-    const user = await userModel.findOrCreate({
-      where: { email: userData.email, name: userData.name },
+    const [user, created] = await userModel.findOrCreate({
+      where: { email: userData.email },
       defaults: userData,
     });
-    const token = auth(user[0]);
-    return token;
+    console.log(created);
+    if (created) {
+      const token = auth(user);
+      return token;
+    } else {
+      throw new BadRequest("Esse usuário já existe!");
+    }
   }
 
   async login(userData) {
     const user = await userModel.findOne({ where: { email: userData.email } });
-    if (!user) {
-      throw new Error("Usuário não encontrado!");
-    }
-    console.log(userData.password);
-    console.log(user.password);
+    if (!user) throw new Error404("Usuário não encontrado!");
     const match = await bcrypt.compare(userData.password, user.password);
-    if (!match) {
-      throw new Error("Senha incorreta!");
-    }
+    if (!match) throw new BadRequest("Senha incorreta!");
+
     const token = auth(user);
     return token;
+  }
+
+  //update
+  async updateAccount(data, userEmail) {
+    const response = await userModel.update(data, {
+      where: { email: userEmail },
+    });
+    return response;
+  }
+
+  //delete
+  async deactivateAccount(email, userEmail) {
+    if (userEmail === email) {
+      const response = await userModel.destroy({
+        where: { email: userEmail },
+      });
+      return response;
+    } else {
+      throw new Forbidden("Você só pode desativar a sua conta!");
+    }
   }
 }
 

@@ -50,6 +50,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       bio: DataTypes.STRING,
       pfp: DataTypes.STRING,
+      role: {
+        type: DataTypes.ENUM,
+        values: ["user", "admin"],
+        defaultValue: "user",
+      },
     },
     {
       sequelize,
@@ -59,6 +64,7 @@ module.exports = (sequelize, DataTypes) => {
           user.password = await bcrypt.hash(user.password, 12);
         },
       },
+      paranoid: true,
     },
   );
   return User;
