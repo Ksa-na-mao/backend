@@ -10,9 +10,41 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      User.hasMany(models.Notification, {foreignKey:"userId", as:"userNotifications"})
-      User.hasMany(models.Notification, {foreignKey:"actorUserId", as:"actorUserId"})
-      User.hasMany(models.Recepies, {foreignKey:"userId", as:"userRecepies"})
+      User.hasMany(models.Notification, {
+        foreignKey: "userId",
+        as: "userNotifications",
+      });
+      User.hasMany(models.Notification, {
+        foreignKey: "actorUserId",
+        as: "actorUserId",
+      });
+      User.hasMany(models.Recepies, {
+        foreignKey: "userId",
+        as: "userRecepies",
+      });
+      User.hasMany(models.Ingridient, {
+        foreignKey: "userId",
+        as: "ingridients",
+      });
+      User.hasOne(models.ShoppingList, { foreignKey: "userId", as: "MyList" });
+      User.hasOne(models.PreparationHistory, {
+        foreignKey: "userId",
+        as: "MyHistory",
+      });
+      User.hasMany(models.Like, { foreignKey: "userId", as: "liked" });
+      User.belongsToMany(User, {
+        through: "Follows",
+        as: "following",
+        foreignKey: "followerId",
+        otherKey: "followingId",
+      });
+
+      User.belongsToMany(User, {
+        through: "Follows",
+        as: "followers",
+        foreignKey: "followingId",
+        otherKey: "followerId",
+      });
     }
   }
   User.init(

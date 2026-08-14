@@ -1,24 +1,28 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Follower extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Follower.belongsTo(models.User, {
+        foreignKey: "followerId",
+        as: "follower",
+      });
+
+      Follower.belongsTo(models.User, {
+        foreignKey: "followingId",
+        as: "following",
+      });
     }
   }
-  Follower.init({
-    followerId: DataTypes.UUID,
-    followedId: DataTypes.UUID
-  }, {
-    sequelize,
-    modelName: 'Follower',
-  });
+  Follower.init(
+    {
+      followerId: { type: DataTypes.INTEGER, allowNull: false },
+      followedId: { type: DataTypes.INTEGER, allowNull: false },
+    },
+    {
+      sequelize,
+      modelName: "Follower",
+    },
+  );
   return Follower;
 };
