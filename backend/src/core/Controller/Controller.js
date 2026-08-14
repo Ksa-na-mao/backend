@@ -1,5 +1,3 @@
-const Services = require("../Services/Services.js");
-
 class Controller {
   constructor(service) {
     this.service = service;

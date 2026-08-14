@@ -13,9 +13,9 @@ class UserServices extends Services {
   constructor() {
     super("User");
   }
-  //get
+  //Get
 
-  async getAllUsers(offset) {
+  async getAll(offset) {
     const users = await userModel.findAll({
       attributes: {
         exclude: ["password", "updatedAt"],
@@ -26,7 +26,7 @@ class UserServices extends Services {
     return users;
   }
 
-  async getUserById(id) {
+  async getById(id) {
     const users = await userModel.findByPk(id, {
       attributes: {
         exclude: ["password", "updatedAt"],
@@ -35,14 +35,13 @@ class UserServices extends Services {
     return users;
   }
 
-  //post
+  //Post
 
   async signUp(userData) {
     const [user, created] = await userModel.findOrCreate({
       where: { email: userData.email },
       defaults: userData,
     });
-    console.log(created);
     if (created) {
       const token = auth(user);
       return token;
@@ -61,7 +60,7 @@ class UserServices extends Services {
     return token;
   }
 
-  //update
+  //Update
   async updateAccount(data, userEmail) {
     const response = await userModel.update(data, {
       where: { email: userEmail },
@@ -69,7 +68,7 @@ class UserServices extends Services {
     return response;
   }
 
-  //delete
+  //Delete
   async deactivateAccount(email, userEmail) {
     if (userEmail === email) {
       const response = await userModel.destroy({
