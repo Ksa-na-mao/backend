@@ -61,7 +61,7 @@ class UserServices extends Services {
   }
 
   //Update
-  async updateAccount(data, userEmail) {
+  async update(data, userEmail) {
     const response = await userModel.update(data, {
       where: { email: userEmail },
     });

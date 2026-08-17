@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class Recipe extends Model {
     static associate(models) {
       Recipe.belongsTo(models.User, { foreignKey: "userId", as: "userRecipe" });
-      Recipe.hasMany(models.Notifications, {
+      Recipe.hasMany(models.Notification, {
         foreignKey: "recipeId",
         as: "recipe",
       });
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Recipe.hasMany(models.RecipeIngridient, {
         foreignKey: "recipeId",
-        as: "recipe",
+        as: "recipeIngridients",
       });
       Recipe.hasMany(models.Like, {
         foreignKey: "recipeId",

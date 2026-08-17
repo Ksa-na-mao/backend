@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "actorUserId",
         as: "actor",
       });
-      Notification.belongsTo(models.Recepies, {
+      Notification.belongsTo(models.Recipe, {
         foreignKey: "recepiesId",
         as: "recepie",
       });
