@@ -1,7 +1,7 @@
 const Controller = require("../../core/Controller/Controller.js");
 const RecipeServices = require("./RecipeServices.js");
 
-const recipeServices = RecipeServices;
+const recipeServices = new RecipeServices();
 
 class RecipeController extends Controller {
   constructor() {
@@ -9,7 +9,7 @@ class RecipeController extends Controller {
   }
 
   //Get
-  async getMyRecipes(req, res, next) {
+  async getAllRecipes(req, res, next) {
     try {
       const recipes = await recipeServices.getRecipes();
       res.status(200).json(recipes);
@@ -21,7 +21,7 @@ class RecipeController extends Controller {
   async getAllMyRecipes(req, res, next) {
     try {
       const id = req.user.userId;
-      const myRecipes = await recipeServices.getMyRecipes(id);
+      const myRecipes = await recipeServices.getAllMyRecipes(id);
       res.status(200).json(myRecipes);
     } catch (error) {
       next(error);

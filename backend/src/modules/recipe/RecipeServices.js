@@ -29,7 +29,7 @@ class RecipeServices extends Services {
     return response;
   }
 
-  async getMyrivateRecipes(id) {
+  async getMyPrivateRecipes(id) {
     const response = await recipeModel.findAll({
       where: { userId: id, isPublic: false },
     });
@@ -38,7 +38,7 @@ class RecipeServices extends Services {
 
   //Post
 
-  async Post(data) {
+  async post(data) {
     const post = await recipeModel.create({
       default: data,
     });

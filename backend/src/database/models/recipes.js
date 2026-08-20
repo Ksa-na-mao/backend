@@ -36,6 +36,12 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.INTEGER,
         references: { model: "User", key: "id" },
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "Algum usuário precisa postar a receita",
+          },
+        },
       },
       originRecipeId: {
         type: DataTypes.INTEGER,
@@ -44,9 +50,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       title: {
         type: DataTypes.STRING,
-        allowNull: {
-          args: false,
-          msg: "Não deixar o título da receita em branco!",
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "Não deixar o título da receita em branco!",
+          },
         },
         len: {
           args: [3, 150],
@@ -55,9 +63,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: {
-          args: false,
-          msg: "A receita precisa de pelo menos um ingrediente, não acha?",
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "A receita precisa de pelo menos um ingrediente, não acha?",
+          },
         },
         len: {
           args: [3, 500],
