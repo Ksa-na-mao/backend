@@ -15,13 +15,17 @@ module.exports = (sequelize, DataTypes) => {
   }
   RecipeIngridient.init(
     {
+      recipeIngridients: {
+        type: DataTypes.INTEGER,
+        references: { model: "Recipe", key: "id" },
+        allowNull: {
+          args: false,
+          msg: "A receita precisa ter pelo menos um ingrediente!",
+        },
+      },
       ingridientId: {
         type: DataTypes.INTEGER,
         references: { model: "Ingridient", key: "id" },
-      },
-      recipeId: {
-        type: DataTypes.INTEGER,
-        references: { model: "Recipe", key: "id" },
       },
       quantity: DataTypes.FLOAT,
       unit: DataTypes.STRING,

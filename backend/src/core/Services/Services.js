@@ -6,7 +6,6 @@ class Services {
   }
 
   async getAll() {
-    console.log("aqui?");
     const data = await dataSource[this.model].findAll();
     return data;
   }

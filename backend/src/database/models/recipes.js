@@ -37,18 +37,32 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         references: { model: "User", key: "id" },
       },
-      originRecipe: {
+      originRecipeId: {
         type: DataTypes.INTEGER,
         references: { model: "Recipe", key: "id" },
         allowNull: true,
       },
       title: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: {
+          args: false,
+          msg: "Não deixar o título da receita em branco!",
+        },
+        len: {
+          args: [3, 150],
+          msg: "A receita pode ter de 3 à 150 caracteres.",
+        },
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: {
+          args: false,
+          msg: "A receita precisa de pelo menos um ingrediente, não acha?",
+        },
+        len: {
+          args: [3, 500],
+          msg: "A receita pode ter de 3 à 500 caracteres.",
+        },
       },
       isPublic: {
         type: DataTypes.BOOLEAN,
@@ -62,6 +76,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Recipe",
+      paranoid: true,
     },
   );
   return Recipe;

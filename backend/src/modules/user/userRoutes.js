@@ -1,7 +1,7 @@
 const express = require("express");
 const UserController = require("../../modules/user/UserController");
-const verifyAccount = require("./middleware/verifyAccount.js");
-const verifyAdmin = require("./middleware/verifyAdmin.js");
+const verifyAccount = require("../../core/middleware/verifyAccount.js");
+const verifyAdmin = require("../../core/middleware/verifyAdmin.js");
 
 const userController = new UserController();
 

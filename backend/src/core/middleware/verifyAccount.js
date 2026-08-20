@@ -1,5 +1,5 @@
-const Unauthorized = require("../../../core/Errors/Unauthorized.js");
-const verifyToken = require("../jwt/verifyToken.js");
+const Unauthorized = require("../Errors/Unauthorized.js");
+const verifyToken = require("../../modules/user/jwt/verifyToken.js");
 
 function verifyAccount(req, res, next) {
   const header = req.headers.authorization;
@@ -12,7 +12,6 @@ function verifyAccount(req, res, next) {
     req.user = user;
     next();
   } catch (error) {
-    console.log(error);
     next(new Unauthorized());
   }
 }

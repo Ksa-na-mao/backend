@@ -12,10 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "userIngridient",
       });
-      Ingridient.hasMany(models.Ingridient, {
-        foreignKey: "ingridientId",
-        as: "ingridient",
-      });
     }
   }
   Ingridient.init(
