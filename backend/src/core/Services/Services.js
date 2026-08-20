@@ -5,8 +5,19 @@ class Services {
     this.model = model;
   }
 
-  async getAll() {
-    const data = await dataSource[this.model].findAll();
+  async getAll(where, offset, limit) {
+    const data = await dataSource[this.model].findAll({
+      where: where,
+      offset: offset || 0,
+      limit: limit || 5,
+    });
+    return data;
+  }
+
+  async getById(id) {
+    const data = await dataSource[this.model].findAll({
+      where: id,
+    });
     return data;
   }
 }

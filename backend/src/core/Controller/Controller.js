@@ -5,8 +5,8 @@ class Controller {
 
   async getAll(req, res, next) {
     try {
-      const offset = parseInt(req.query.offset) || 0;
-      const response = await this.service.getAll(offset);
+      const { where, offset, limit } = parseInt(req.query.offset) || 0;
+      const response = await this.service.getAll(where, offset, limit);
       res.status(200).json(response);
     } catch (error) {
       next(error);
