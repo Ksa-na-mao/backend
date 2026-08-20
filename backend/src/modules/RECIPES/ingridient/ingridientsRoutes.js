@@ -1,5 +1,5 @@
 const express = require("express");
-const verifyAccount = require("../../core/middleware/verifyAccount.js");
+const verifyAccount = require("../../../core/middleware/verifyAccount.js");
 const IngridientController = require("./IngridientController.js");
 const ingridientController = new IngridientController();
 

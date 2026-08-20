@@ -1,6 +1,6 @@
-const Services = require("../../core/Services/Services.js");
-const dataSource = require("../../database/models");
-const Forbidden = require("../../core/Errors/Forbidden.js");
+const Services = require("../../../core/Services/Services.js");
+const dataSource = require("../../../database/models");
+const Forbidden = require("../../../core/Errors/Forbidden.js");
 
 const recipeModel = dataSource["Recipe"];
 

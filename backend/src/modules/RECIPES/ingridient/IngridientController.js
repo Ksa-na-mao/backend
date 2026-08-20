@@ -1,4 +1,4 @@
-const Controller = require("../../core/Controller/Controller.js");
+const Controller = require("../../../core/Controller/Controller.js");
 const IngridientServices = require("./IngridientServices.js");
 const ingridientServices = new IngridientServices();
 

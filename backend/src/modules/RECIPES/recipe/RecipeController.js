@@ -1,4 +1,4 @@
-const Controller = require("../../core/Controller/Controller.js");
+const Controller = require("../../../core/Controller/Controller.js");
 const RecipeServices = require("./RecipeServices.js");
 
 const recipeServices = new RecipeServices();

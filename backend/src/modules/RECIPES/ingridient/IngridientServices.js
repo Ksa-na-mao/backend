@@ -1,8 +1,8 @@
-const Services = require("../../core/Services/Services.js");
-const dataSource = require("../../database/models");
+const Services = require("../../../core/Services/Services.js");
+const dataSource = require("../../../database/models");
 const model = dataSource["Ingridient"];
 
-const BadRequest = require("../../core/Errors/BadRequest.js");
+const BadRequest = require("../../../core/Errors/BadRequest.js");
 
 class IngridientServices extends Services {
   constructor() {

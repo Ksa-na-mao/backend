@@ -1,5 +1,5 @@
 const express = require("express");
-const verifyAccount = require("../../core/middleware/verifyAccount.js");
+const verifyAccount = require("../../../core/middleware/verifyAccount.js");
 const RecipeController = require("./RecipeController.js");
 const recipeController = new RecipeController();
 
