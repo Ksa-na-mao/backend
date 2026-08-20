@@ -22,9 +22,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "userRecepies",
       });
-      User.hasMany(models.Ingridient, {
+      User.hasMany(models.Pantry, {
         foreignKey: "userId",
-        as: "ingridients",
+        as: "pantrys",
       });
       User.hasOne(models.ShoppingList, { foreignKey: "userId", as: "MyList" });
       User.hasOne(models.PreparationHistory, {
