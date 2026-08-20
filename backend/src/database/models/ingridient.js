@@ -16,15 +16,25 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "ingridientId",
         as: "recipeIngridient",
       });
+      Ingridient.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "creator",
+      });
     }
   }
   Ingridient.init(
     {
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: "User", key: "id" },
+      },
       name: { type: DataTypes.STRING, allowNull: false },
     },
     {
       sequelize,
       modelName: "Ingridient",
+      paranoid: true,
     },
   );
   return Ingridient;
