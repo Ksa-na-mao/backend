@@ -6,14 +6,17 @@ const bcrypt = require("bcrypt");
 const BadRequest = require("../../core/Errors/BadRequest.js");
 const Forbidden = require("../../core/Errors/Forbidden.js");
 const Error404 = require("../../core/Errors/Error404.js");
+const BaseError = require("../../core/Errors/baseError.js");
 
 const userModel = dataSource["User"];
+const pantryModel = dataSource["Pantry"];
+const sequelize = dataSource.sequelize;
 
 class UserServices extends Services {
   constructor() {
     super("User");
   }
-  //get
+  //Get
 
   async getAllUsers(offset) {
     const users = await userModel.findAll({
@@ -35,21 +38,35 @@ class UserServices extends Services {
     return users;
   }
 
-  //post
+  //Post
 
   async signUp(userData) {
-    const [user, created] = await userModel.findOrCreate({
-      where: { email: userData.email },
-      defaults: userData,
-    });
-    console.log(created);
-    if (created) {
+    const result = await sequelize.transaction(async (t) => {
+      const [user, created] = await userModel.findOrCreate({
+        where: { email: userData.email },
+        defaults: userData,
+        transaction: t,
+      });
+
+      if (created) {
+        await pantryModel.create(
+          {
+            userId: user.id,
+            name: "Meu estoque",
+          },
+          {
+            transaction: t,
+          },
+        );
+      }
       const token = auth(user);
       return token;
-    } else {
-      throw new BadRequest("Esse usuário já existe!");
-    }
+    });
+
+    if (!result) throw new BaseError();
   }
+
+  //
 
   async login(userData) {
     const user = await userModel.findOne({ where: { email: userData.email } });
@@ -61,7 +78,7 @@ class UserServices extends Services {
     return token;
   }
 
-  //update
+  //Update
   async updateAccount(data, userEmail) {
     const response = await userModel.update(data, {
       where: { email: userEmail },
@@ -69,7 +86,7 @@ class UserServices extends Services {
     return response;
   }
 
-  //delete
+  //Delete
   async deactivateAccount(email, userEmail) {
     if (userEmail === email) {
       const response = await userModel.destroy({
