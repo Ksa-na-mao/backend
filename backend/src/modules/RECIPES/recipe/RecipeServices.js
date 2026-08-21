@@ -2,10 +2,11 @@ const Services = require("../../../core/Services/Services.js");
 const dataSource = require("../../../database/models");
 const Forbidden = require("../../../core/Errors/Forbidden.js");
 
-const { Recipeingredient } = require("../../../database/models");
-const { Sequelize, BaseError } = require("sequelize");
+const { RecipeIngredient } = require("../../../database/models");
+const BadRequest = require("../../../core/Errors/BadRequest.js");
 
 const recipeModel = dataSource["Recipe"];
+const sequelize = dataSource.sequelize;
 
 class RecipeServices extends Services {
   constructor() {
@@ -15,7 +16,7 @@ class RecipeServices extends Services {
   //Get
   async getRecipes() {
     const response = await recipeModel.findAll({
-      include: { model: Recipeingredient, as: "recipeingredients" },
+      include: { model: RecipeIngredient, as: "recipeIngredients" },
       where: { isPublic: true },
     });
     return response;
@@ -23,6 +24,7 @@ class RecipeServices extends Services {
 
   async getAllMyRecipes(id) {
     const response = await recipeModel.findAll({
+      include: { model: RecipeIngredient, as: "recipeIngredients" },
       where: { userId: id },
     });
     return response;
@@ -30,6 +32,7 @@ class RecipeServices extends Services {
 
   async getMyPublicRecipes(id) {
     const response = await recipeModel.findAll({
+      include: { model: RecipeIngredient, as: "recipeIngredients" },
       where: { userId: id, isPublic: true },
     });
     return response;
@@ -37,6 +40,7 @@ class RecipeServices extends Services {
 
   async getMyPrivateRecipes(id) {
     const response = await recipeModel.findAll({
+      include: { model: RecipeIngredient, as: "recipeIngredients" },
       where: { userId: id, isPublic: false },
     });
     return response;
@@ -45,22 +49,36 @@ class RecipeServices extends Services {
   //Post
 
   async post(data) {
-    const result = await Sequelize.transaction(async (t) => {
-      const recipe = await recipeModel.create(data, { transaction: t });
-      const ingredients = data.RecipeIngredients.map((ingredient) => ({
+    const result = await sequelize.transaction(async (t) => {
+      const { data: recipeData, userId } = data;
+      const { RecipeIngredients, ...recipeFields } = recipeData;
+      const recipe = await recipeModel.create(
+        {
+          ...recipeFields,
+          userId,
+        },
+        {
+          transaction: t,
+        },
+      );
+      const ingredients = RecipeIngredients.map((ingredient) => ({
         ...ingredient,
         recipeId: recipe.id,
       }));
-      Recipeingredient.bulkCreate(ingredients, { transaction: t });
+      await RecipeIngredient.bulkCreate(ingredients, {
+        transaction: t,
+      });
+
       return recipe;
     });
-    if (!result) throw new BaseError("Erro inesperado");
+
+    return result;
   }
 
   //Patch
 
   async updateRecipe(data, recipeId, userId, editorId) {
-    if (editorId === userId) {
+    if (editorId === Number(userId)) {
       const post = await recipeModel.update(data, {
         where: { id: recipeId },
       });

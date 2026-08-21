@@ -67,7 +67,7 @@ class RecipeController extends Controller {
     try {
       const data = req.body;
       const { recipeId, userId } = req.params;
-      const editor = req.user.id;
+      const editor = req.user.userId;
       const updated = await recipeServices.updateRecipe(
         data,
         recipeId,

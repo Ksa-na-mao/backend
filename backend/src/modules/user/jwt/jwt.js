@@ -5,5 +5,5 @@ module.exports = (user) => {
   const userRole = user.role;
   const userEmail = user.email;
   const userObj = { userId, userRole, userEmail };
-  return jwt.sign(userObj, process.env.privateKeyJson, { expiresIn: "1h" });
+  return jwt.sign(userObj, process.env.privateKeyJson, { expiresIn: "1w" });
 };
