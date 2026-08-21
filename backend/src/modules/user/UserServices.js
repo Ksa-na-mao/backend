@@ -20,8 +20,8 @@ class UserServices extends Services {
       attributes: {
         exclude: ["password", "updatedAt"],
       },
-      offset: offset,
-      limit: offset + 10,
+      offset: offset || 0,
+      limit: offset || 0 + 10,
     });
     return users;
   }
@@ -62,10 +62,12 @@ class UserServices extends Services {
 
   //Update
   async update(data, userEmail) {
-    const response = await userModel.update(data, {
-      where: { email: userEmail },
-    });
-    return response;
+    if (userEmail) {
+      const response = await userModel.update(data, {
+        where: { email: userEmail },
+      });
+      return response;
+    } else throw new BadRequest("Precisa enviar seu email para nós");
   }
 
   //Delete

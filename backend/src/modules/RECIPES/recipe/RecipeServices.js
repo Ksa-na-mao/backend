@@ -2,6 +2,9 @@ const Services = require("../../../core/Services/Services.js");
 const dataSource = require("../../../database/models");
 const Forbidden = require("../../../core/Errors/Forbidden.js");
 
+const { Recipeingredient } = require("../../../database/models");
+const { Sequelize, BaseError } = require("sequelize");
+
 const recipeModel = dataSource["Recipe"];
 
 class RecipeServices extends Services {
@@ -11,7 +14,10 @@ class RecipeServices extends Services {
 
   //Get
   async getRecipes() {
-    const response = await recipeModel.findAll({ where: { isPublic: true } });
+    const response = await recipeModel.findAll({
+      include: { model: Recipeingredient, as: "recipeingredients" },
+      where: { isPublic: true },
+    });
     return response;
   }
 
@@ -39,11 +45,16 @@ class RecipeServices extends Services {
   //Post
 
   async post(data) {
-    const post = await recipeModel.create({
-      default: data,
+    const result = await Sequelize.transaction(async (t) => {
+      const recipe = await recipeModel.create(data, { transaction: t });
+      const ingredients = data.RecipeIngredients.map((ingredient) => ({
+        ...ingredient,
+        recipeId: recipe.id,
+      }));
+      Recipeingredient.bulkCreate(ingredients, { transaction: t });
+      return recipe;
     });
-
-    return post;
+    if (!result) throw new BaseError("Erro inesperado");
   }
 
   //Patch

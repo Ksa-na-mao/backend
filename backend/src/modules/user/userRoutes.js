@@ -21,7 +21,7 @@ Router.delete("/user/deactivate/:id", verifyAccount, (req, res, next) =>
   userController.deactivateAccount(req, res, next),
 );
 Router.put("/user/update/:id", verifyAccount, (req, res, next) =>
-  userController.update(req, res, next),
+  userController.updateAccount(req, res, next),
 );
 
 module.exports = Router;

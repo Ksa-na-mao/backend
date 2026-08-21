@@ -1,10 +1,10 @@
 const Services = require("../../../core/Services/Services.js");
 const dataSource = require("../../../database/models/index.js");
-const model = dataSource["RecipeIngridient"];
+const model = dataSource["Recipeingredient"];
 
-class RecipeIngridientServices extends Services {
+class RecipeingredientServices extends Services {
   constructor() {
-    super("RecipeIngridient");
+    super("Recipeingredient");
   }
 
   async post(data) {
@@ -13,4 +13,4 @@ class RecipeIngridientServices extends Services {
   }
 }
 
-module.exports = RecipeIngridientServices;
+module.exports = RecipeingredientServices;

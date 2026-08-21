@@ -1,19 +1,19 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class RecipeIngridient extends Model {
+  class RecipeIngredient extends Model {
     static associate(models) {
-      RecipeIngridient.belongsTo(models.Ingridient, {
-        foreignKey: "ingridientId",
-        as: "ingridient",
+      RecipeIngredient.belongsTo(models.Ingredient, {
+        foreignKey: "ingredientId",
+        as: "ingredient",
       });
-      RecipeIngridient.belongsTo(models.Recipe, {
+      RecipeIngredient.belongsTo(models.Recipe, {
         foreignKey: "recipeId",
         as: "recipe",
       });
     }
   }
-  RecipeIngridient.init(
+  RecipeIngredient.init(
     {
       recipeId: {
         type: DataTypes.INTEGER,
@@ -25,9 +25,10 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      ingridientId: {
+      IngredientId: {
         type: DataTypes.INTEGER,
-        references: { model: "Ingridient", key: "id" },
+        references: { model: "Ingredient", key: "id" },
+        allowNull: false,
         validate: {
           notNull: { msg: "A receita precisa ter pelo menos um ingrediente!" },
         },
@@ -51,8 +52,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "RecipeIngridient",
+      modelName: "RecipeIngredient",
     },
   );
-  return RecipeIngridient;
+  return RecipeIngredient;
 };

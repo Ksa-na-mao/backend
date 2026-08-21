@@ -4,11 +4,6 @@ const goodPassword = require("../../modules/user/helper/goodPassword.js");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       User.hasMany(models.Notification, {
         foreignKey: "userId",
@@ -22,9 +17,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "userRecepies",
       });
-      User.hasMany(models.Ingridient, {
+      User.hasMany(models.Ingredient, {
         foreignKey: "userId",
-        as: "ingridients",
+        as: "ingredients",
       });
       User.hasMany(models.Pantry, {
         foreignKey: "userId",
