@@ -30,10 +30,12 @@ class Controller {
     try {
       const userId = req.user.userId;
       const data = req.body;
-      data.userId = userId;
-      const [response, created] = await this.service.post(data);
-      if (created) res.status(201).json(response);
-      else throw new BadRequest("Recurso já tinha sido criado antes!");
+      if (data) {
+        data.userId = userId;
+        const [response, created] = await this.service.post(data);
+        if (created) res.status(201).json(response);
+        else throw new BadRequest("Recurso já tinha sido criado antes!");
+      } else throw new BadRequest("Para criar algo precisamos de informação.");
     } catch (error) {
       next(error);
     }

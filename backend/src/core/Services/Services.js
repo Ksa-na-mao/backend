@@ -1,4 +1,5 @@
 const dataSource = require("../../database/models");
+const BadRequest = require("../Errors/BadRequest");
 const Forbidden = require("../Errors/Forbidden");
 
 class Services {
@@ -25,14 +26,16 @@ class Services {
 
   //Update
   async update(data, id, userId, creatorId) {
-    if (userId === Number(creatorId)) {
-      const update = await dataSource[this.model].update(data, {
-        where: { id: id },
-      });
-      return update;
-    } else {
-      throw new Forbidden("Você só pode atualizar as suas próprias coisas!");
-    }
+    if (data) {
+      if (userId === Number(creatorId)) {
+        const update = await dataSource[this.model].update(data, {
+          where: { id: id },
+        });
+        return update;
+      } else {
+        throw new Forbidden("Você só pode atualizar as suas próprias coisas!");
+      }
+    } else throw new BadRequest("Você precisa mudar algo para atualizar!");
   }
 
   //Delete

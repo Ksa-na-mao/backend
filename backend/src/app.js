@@ -1,5 +1,5 @@
 const express = require("express");
-const mainRoutes = require("./core/routes/mainRoutes.js");
+const mainRoutes = require("./core/routes/Routes.js");
 const ErrorHandler = require("./core/Errors/1ErrorHandler.js");
 const Error404Middleware = require("./core/Errors/Error404Middleware.js");
 

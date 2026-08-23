@@ -4,15 +4,15 @@ module.exports = (sequelize, DataTypes) => {
   class Pantry extends Model {
     static associate(models) {
       Pantry.belongsToMany(models.User, {
-        foreignKey: "userId",
+        through: "PantryUser",
+        foreignKey: "pantryId",
+        otherKey: "userId",
         as: "userPantry",
       });
+
       Pantry.hasMany(models.PantryIngredient, {
         foreignKey: "pantryId",
-        as: "pantry",
-      });
-      Pantry.belongsToMany(models.User, {
-        through: "PantryUser",
+        as: "allPantryIngredients",
       });
     }
   }
@@ -23,7 +23,16 @@ module.exports = (sequelize, DataTypes) => {
         references: { model: "User", key: "id" },
         allowNull: false,
       },
-      name: { type: DataTypes.STRING, allowNull: false },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: {
+            args: [3, 50],
+            msg: "O nome do estoque precisa ter de 3 a 50 caracteres!",
+          },
+        },
+      },
     },
     {
       sequelize,

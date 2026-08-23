@@ -3,6 +3,7 @@ const users = require("../../modules/user/userRoutes.js");
 const recipes = require("../../modules/RECIPES/recipe/recipesRoutes.js");
 const ingredients = require("../../modules/RECIPES/ingredient/ingredientsRoutes.js");
 const recipeingredients = require("../../modules/RECIPES/recipeingredient/recipeingredientsRoutes.js");
+const Pantry = require("../../modules/PANTRY/pantry/pantriesRoutes.js");
 
 module.exports = (app) => {
   app.use(express.json());
@@ -10,4 +11,5 @@ module.exports = (app) => {
   app.use(recipes);
   app.use(ingredients);
   app.use(recipeingredients);
+  app.use(Pantry);
 };
