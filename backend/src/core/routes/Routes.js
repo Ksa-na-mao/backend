@@ -1,5 +1,5 @@
 const express = require("express");
-const users = require("../../modules/user/userRoutes");
+const users = require("../../modules/user/userRoutes.js");
 const recipes = require("../../modules/RECIPES/recipe/recipesRoutes.js");
 const ingredients = require("../../modules/RECIPES/ingredient/ingredientsRoutes.js");
 const recipeingredients = require("../../modules/RECIPES/recipeingredient/recipeingredientsRoutes.js");

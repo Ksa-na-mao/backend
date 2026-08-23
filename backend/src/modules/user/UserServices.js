@@ -6,8 +6,11 @@ const bcrypt = require("bcrypt");
 const BadRequest = require("../../core/Errors/BadRequest.js");
 const Forbidden = require("../../core/Errors/Forbidden.js");
 const Error404 = require("../../core/Errors/Error404.js");
+const BaseError = require("../../core/Errors/baseError.js");
 
 const userModel = dataSource["User"];
+const pantryModel = dataSource["Pantry"];
+const sequelize = dataSource.sequelize;
 
 class UserServices extends Services {
   constructor() {
@@ -15,18 +18,19 @@ class UserServices extends Services {
   }
   //Get
 
-  async getAll(offset) {
+  async getAllUsers(offset) {
     const users = await userModel.findAll({
+      include: [{ model: pantryModel, as: "pantrys" }],
       attributes: {
         exclude: ["password", "updatedAt"],
       },
-      offset: offset || 0,
-      limit: offset || 0 + 10,
+      offset: offset,
+      limit: 10,
     });
     return users;
   }
 
-  async getById(id) {
+  async getUserById(id) {
     const users = await userModel.findByPk(id, {
       attributes: {
         exclude: ["password", "updatedAt"],
@@ -38,17 +42,35 @@ class UserServices extends Services {
   //Post
 
   async signUp(userData) {
-    const [user, created] = await userModel.findOrCreate({
-      where: { email: userData.email },
-      defaults: userData,
+    const result = await sequelize.transaction(async (t) => {
+      const [user, created] = await userModel.findOrCreate({
+        where: { email: userData.email },
+        defaults: userData,
+        transaction: t,
+      });
+
+      if (created) {
+        await pantryModel.create(
+          {
+            userId: user.id,
+            name: "Meu estoque",
+          },
+          {
+            transaction: t,
+          },
+        );
+        const token = auth(user);
+        return token;
+      } else {
+        throw new BadRequest("Conta já existe!");
+      }
     });
-    if (created) {
-      const token = auth(user);
-      return token;
-    } else {
-      throw new BadRequest("Esse usuário já existe!");
-    }
+
+    if (!result) throw new BaseError();
+    return result;
   }
+
+  //
 
   async login(userData) {
     const user = await userModel.findOne({ where: { email: userData.email } });
@@ -61,13 +83,11 @@ class UserServices extends Services {
   }
 
   //Update
-  async update(data, userEmail) {
-    if (userEmail) {
-      const response = await userModel.update(data, {
-        where: { email: userEmail },
-      });
-      return response;
-    } else throw new BadRequest("Precisa enviar seu email para nós");
+  async updateAccount(data, userEmail) {
+    const response = await userModel.update(data, {
+      where: { email: userEmail },
+    });
+    return response;
   }
 
   //Delete

@@ -25,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "pantrys",
       });
+      User.belongsToMany(models.Pantry, {
+        through: "PantryUser",
+      });
       User.hasOne(models.ShoppingList, { foreignKey: "userId", as: "MyList" });
       User.hasOne(models.PreparationHistory, {
         foreignKey: "userId",
