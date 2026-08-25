@@ -5,13 +5,17 @@ const pantryIngredientController = new PantryIngredientController();
 
 const Router = express.Router();
 
-Router.post("/pantry/post", verifyAccount, (req, res, next) =>
-  pantryIngredientController.post(req, res, next),
+Router.post(
+  "/pantryIngredient/post/pantryId/:pantryId",
+  verifyAccount,
+  (req, res, next) => pantryIngredientController.post(req, res, next),
 );
-Router.patch("/pantry/update", verifyAccount, (req, res, next) =>
-  pantryIngredientController.update(req, res, next),
+Router.patch(
+  "/pantryIngredient/update/pantryId/:pantryId/ingredientId/:ingredientId",
+  verifyAccount,
+  (req, res, next) => pantryIngredientController.update(req, res, next),
 );
-Router.delete("/pantry/delete", verifyAccount, (req, res, next) =>
+Router.delete("/pantryIngredient/delete", verifyAccount, (req, res, next) =>
   pantryIngredientController.delete(req, res, next),
 );
 

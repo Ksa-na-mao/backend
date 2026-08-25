@@ -32,7 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       currentQuantity: { type: DataTypes.FLOAT, defaultValue: 0 },
       minimumQuantity: { type: DataTypes.FLOAT, defaultValue: 0 },
-      expirationDate: DataTypes.DATE,
+      expirationDate: {
+        type: DataTypes.DATE,
+        validate: { isDate: true },
+      },
     },
     {
       sequelize,

@@ -10,10 +10,31 @@ class PantryIngredientController extends Controller {
 
   async post(req, res, next) {
     try {
-      const { pantryId, ingredients } = req.body;
+      const { pantryId } = req.params;
+      const pantryIdNumber = Number(pantryId);
+      const ingredients = req.body;
       const response = await pantryIngredientServices.post(
-        pantryId,
+        pantryIdNumber,
         ingredients,
+        req.user.userId,
+      );
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  //Update
+
+  async update(req, res, next) {
+    try {
+      const data = req.body;
+      const { pantryId, ingredientId } = req.params;
+      const response = await pantryIngredientServices.update(
+        data,
+        pantryId,
+        ingredientId,
+        req.user.userId,
       );
       res.status(200).json(response);
     } catch (error) {
@@ -24,13 +45,9 @@ class PantryIngredientController extends Controller {
   //Delete
   async delete(req, res, next) {
     try {
-      const { pantryIngredientId, creatorId } = req.query;
+      const { ingredientId, pantryId } = req.params;
       const userId = req.user.userId;
-      await pantryIngredientServices.delete(
-        pantryIngredientId,
-        creatorId,
-        userId,
-      );
+      await pantryIngredientServices.delete(ingredientId, pantryId, userId);
       res.status(200).json("Estoque apagado com sucesso!");
     } catch (error) {
       next(error);

@@ -5,19 +5,28 @@ const sequelize = dataSource.sequelize;
 const BadRequest = require("../../../core/Errors/BadRequest.js");
 const Forbidden = require("../../../core/Errors/Forbidden.js");
 
-const Pantry = dataSource["Pantry"];
-const PantryUsers = dataSource["PantryUser"];
 const PantryIngredient = dataSource["PantryIngredient"];
+const PantryUser = dataSource["PantryUser"];
 
 class PantryIngredientServices extends Services {
   constructor() {
     super("Pantry");
   }
 
+  //Helper
+  async getPantryUsersId(pantryId, userId) {
+    const pantry = await PantryUser.findOne({
+      where: { pantryId: pantryId, userId },
+      attributes: ["userId"],
+    });
+
+    return pantry?.userId;
+  }
+
   //Post
 
-  async post(pantryId, ingredients) {
-    if (ingredients) {
+  async post(pantryId, ingredients, reqUserId) {
+    if (ingredients && this.getPantryUsersId(pantryId, reqUserId)) {
       return await sequelize.transaction(async (t) => {
         return await Promise.all(
           ingredients.map(async (ingredient) => {
@@ -29,13 +38,16 @@ class PantryIngredientServices extends Services {
                 },
                 defaults: {
                   currentQuantity: ingredient.currentQuantity,
-                  minQuantity: ingredient.minQuantity,
+                  minimumQuantity: ingredient.minimumQuantity,
                 },
                 transaction: t,
               });
-
             if (!created) {
               pantryIngredient.currentQuantity += ingredient.currentQuantity;
+              const minimum = ingredient.minimumQuantity
+                ? ingredient.minimumQuantity
+                : pantryIngredient.minimumQuantity;
+              pantryIngredient.minimumQuantity = minimum;
 
               await pantryIngredient.save({
                 transaction: t,
@@ -46,54 +58,65 @@ class PantryIngredientServices extends Services {
           }),
         );
       });
-    } else throw new BadRequest("O estoque precisa de um nome");
+    } else throw new BadRequest("Selecione um ingrediente.");
   }
 
   //Update
-  async update(data, id) {
-    if (data) {
-      return await sequelize.transaction(async (t) => {
-        return await Promise.all(
-          data.map(async (ingredient) => {
-            const update = await PantryIngredient.findOne({
-              where: {
-                ingredientId: ingredient.id,
-                pantryId: id,
-              },
-              transaction: t,
-            });
-
-            if (!update) {
-              return await PantryIngredient.create(
-                {
-                  ingredientId: ingredient.id,
-                  pantryId: id,
-                  currentQuantity: ingredient.currentQuantity,
+  async update(data, pantryId, ingredientId, userId) {
+    if (await this.getPantryUsersId(pantryId, userId)) {
+      if (data) {
+        return await sequelize.transaction(async (t) => {
+          return await Promise.all(
+            data.map(async (ingredient) => {
+              const update = await PantryIngredient.findOne({
+                where: {
+                  ingredientId: ingredientId,
+                  pantryId: pantryId,
                 },
-                {
-                  transaction: t,
-                },
-              );
-            }
+                transaction: t,
+              });
 
-            update.currentQuantity += ingredient.currentQuantity;
+              if (!update) {
+                return await PantryIngredient.create(
+                  {
+                    ingredientId: ingredient.id,
+                    pantryId: pantryId,
+                    currentQuantity: ingredient.currentQuantity,
+                    expirationDate: ingredient.expirationDate,
+                  },
+                  {
+                    transaction: t,
+                  },
+                );
+              }
 
-            await update.save({
-              transaction: t,
-            });
+              update.currentQuantity = ingredient.currentQuantity
+                ? ingredient.currentQuantity
+                : update.currentQuantity;
+              update.currentQuantity = ingredient.minimumQuantity
+                ? ingredient.minimumQuantity
+                : update.minimumQuantity;
+              update.expirationDate = ingredient.expirationDate
+                ? ingredient.expirationDate
+                : update.expirationDate;
 
-            return update;
-          }),
-        );
-      });
-    } else throw new BadRequest("Você precisa mudar algo para atualizar!");
+              await update.save({
+                transaction: t,
+              });
+
+              return update;
+            }),
+          );
+        });
+      } else throw new BadRequest("Você precisa mudar algo para atualizar!");
+    } else throw new Forbidden();
   }
 
   //Delete
 
-  async delete(id, creatorId, userId) {
-    if (creatorId === userId) {
-      await PantryIngredient.destroy({ where: { ingredientId: id } });
+  async delete(ingredientId, pantryId, userId) {
+    if (this.getPantryUsersId(pantryId, userId)) {
+      await PantryIngredient.destroy({ where: { ingredientId: ingredientId } });
     } else {
       throw new Forbidden();
     }
