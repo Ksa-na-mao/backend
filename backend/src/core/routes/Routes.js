@@ -5,6 +5,7 @@ const ingredients = require("../../modules/RECIPES/ingredient/ingredientsRoutes.
 const recipeingredients = require("../../modules/RECIPES/recipeingredient/recipeingredientsRoutes.js");
 const Pantry = require("../../modules/PANTRY/pantry/pantriesRoutes.js");
 const pantryIngredient = require("../../modules/PANTRY/pantryIngridient/pantryIngredientsRoutes.js");
+const shoppingListItem = require("../../modules/SHOPPINGLIST/shoppingListItem/ShoppingListItemRoutes.js");
 
 module.exports = (app) => {
   app.use(express.json());
@@ -14,4 +15,5 @@ module.exports = (app) => {
   app.use(recipeingredients);
   app.use(Pantry);
   app.use(pantryIngredient);
+  app.use(shoppingListItem);
 };

@@ -9,12 +9,22 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      userId: {
+      ingredientId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      pantryId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
       purchased: {
         type: Sequelize.BOOLEAN,
+      },
+      purchasedAt: {
+        type: Sequelize.DATE,
+      },
+      amount: {
+        type: Sequelize.FLOAT,
       },
       createdAt: {
         allowNull: false,

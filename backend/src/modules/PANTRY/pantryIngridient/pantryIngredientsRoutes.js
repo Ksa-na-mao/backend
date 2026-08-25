@@ -10,10 +10,8 @@ Router.post(
   verifyAccount,
   (req, res, next) => pantryIngredientController.post(req, res, next),
 );
-Router.patch(
-  "/pantryIngredient/update/pantryId/:pantryId/ingredientId/:ingredientId",
-  verifyAccount,
-  (req, res, next) => pantryIngredientController.update(req, res, next),
+Router.patch(" ", verifyAccount, (req, res, next) =>
+  pantryIngredientController.update(req, res, next),
 );
 Router.delete("/pantryIngredient/delete", verifyAccount, (req, res, next) =>
   pantryIngredientController.delete(req, res, next),

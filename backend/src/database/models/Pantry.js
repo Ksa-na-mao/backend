@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "pantryId",
         as: "allPantryIngredients",
       });
+      Pantry.hasMany(models.ShoppingListItem, {
+        foreignKey: "pantryId",
+        as: "allShoppingListItems",
+      });
     }
   }
   Pantry.init(

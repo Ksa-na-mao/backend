@@ -3,18 +3,26 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class ShoppingList extends Model {
     static associate(models) {
-      ShoppingList.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "userList",
+      ShoppingList.belongsTo(models.Pantry, {
+        foreignKey: "pantryId",
+        as: "pantryList",
+      });
+      ShoppingList.belongsTo(models.Ingredient, {
+        foreignKey: "ingredientId",
+        as: "ingredientList",
       });
     }
   }
   ShoppingList.init(
     {
       status: DataTypes.STRING,
-      userId: {
+      pantryId: {
         type: DataTypes.INTEGER,
         references: { model: "User", key: "id" },
+      },
+      ingredientId: {
+        type: DataTypes.INTEGER,
+        references: { model: "Ingredient", key: "id" },
       },
     },
     {
