@@ -1,6 +1,6 @@
-const dataSource = require("../../database/models");
-const BadRequest = require("../Errors/BadRequest");
-const Forbidden = require("../Errors/Forbidden");
+import dataSource from "../../database/models";
+import BadRequest from "../Errors/BadRequest";
+import Forbidden from "../Errors/Forbidden";
 
 class Services {
   constructor(model) {
@@ -8,7 +8,7 @@ class Services {
   }
 
   //Get
-  async getAll(where, offset, limit) {
+  async getAll(where: string[], offset: number, limit: number) {
     const data = await dataSource[this.model].findAll({
       where: where,
       offset: offset || 0,
@@ -17,7 +17,7 @@ class Services {
     return data;
   }
 
-  async getById(id) {
+  async getById(id: number) {
     const data = await dataSource[this.model].findAll({
       where: id,
     });
@@ -51,4 +51,4 @@ class Services {
   }
 }
 
-module.exports = Services;
+export default Services;

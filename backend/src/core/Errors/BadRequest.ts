@@ -1,11 +1,12 @@
 const BaseError = require("./baseError");
 
 class BadRequest extends BaseError {
-  constructor(message, status) {
+  constructor(message: string, status?: Number) {
     super(
       message || "O servidor não sabe o que fazer com isso... desculpa! :(",
       400,
     );
   }
 }
-module.exports = BadRequest;
+
+export default BadRequest;

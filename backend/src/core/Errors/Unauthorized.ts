@@ -1,9 +1,8 @@
-const BaseError = require("./baseError");
+import BaseError from "./BaseError";
 
-//check
 class Unauthorized extends BaseError {
-  constructor(message, status) {
+  constructor(message?: string, status?: number) {
     super(message || "Você não está autenticado. Faça-o, por favor.", 401);
   }
 }
-module.exports = Unauthorized;
+export default Unauthorized;

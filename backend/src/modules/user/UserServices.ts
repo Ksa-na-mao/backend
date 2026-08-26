@@ -1,19 +1,22 @@
-const Services = require("../../core/Services/Services");
-const dataSource = require("../../database/models");
-const auth = require("./jwt/jwt.js");
-const bcrypt = require("bcrypt");
+import Services from "../../core/Services/Services.js";
+import dataSource from "../../database/models/index.js";
+import auth from "../../core/jwt/jwt.ts";
+import bcrypt from "bcrypt";
 
-const BadRequest = require("../../core/Errors/BadRequest.js");
-const Forbidden = require("../../core/Errors/Forbidden.js");
-const Error404 = require("../../core/Errors/Error404.js");
-const BaseError = require("../../core/Errors/baseError.js");
+import BadRequest from "../../core/Errors/BadRequest.js";
+import Forbidden from "../../core/Errors/Forbidden.js";
+import Error404 from "../../core/Errors/Error404.js";
 
-const userModel = dataSource["User"];
-const pantryModel = dataSource["Pantry"];
+import PantryServices from "../PANTRY/pantry/PantryServices.js";
+
+const userModel = dataSource.User;
+const pantryModel = dataSource.Pantry;
+
 const sequelize = dataSource.sequelize;
 
-const PantryServices = require("../PANTRY/pantry/PantryServices.js");
 const pantryServices = new PantryServices();
+
+import { SignUpData } from "../../core/types/user/user.ts";
 
 class UserServices extends Services {
   constructor() {
@@ -21,19 +24,21 @@ class UserServices extends Services {
   }
   //Get
 
-  async getAllUsers(offset) {
+  async getAllUsers(where: any, offset: number, limit: number) {
     const users = await userModel.findAll({
       include: [{ model: pantryModel, as: "pantrys" }],
       attributes: {
         exclude: ["password", "updatedAt"],
       },
-      offset: offset,
-      limit: 10,
+      where,
+      offset,
+      limit,
     });
+
     return users;
   }
 
-  async getUserById(id) {
+  async getUserById(id: number) {
     const users = await userModel.findByPk(id, {
       attributes: {
         exclude: ["password", "updatedAt"],
@@ -44,33 +49,32 @@ class UserServices extends Services {
 
   //Post
 
-  async signUp(userData) {
-    const result = await sequelize.transaction(async (t) => {
+  async signUp(userData: SignUpData) {
+    return await sequelize.transaction(async (t: any) => {
       const [user, created] = await userModel.findOrCreate({
         where: { email: userData.email },
         defaults: userData,
         transaction: t,
       });
 
-      if (created) {
-        const data = {};
-        data.userId = user.userId;
-        data.name = "Primeiro estoque!";
-        pantryServices.createPantryAndShoppingList(data);
-        const token = auth(user);
-        return token;
-      } else {
+      if (!created) {
         throw new BadRequest("Conta já existe!");
       }
-    });
 
-    if (!result) throw new BaseError();
-    return result;
+      const data = {
+        userId: user.userId,
+        name: "Primeiro estoque!",
+      };
+
+      await pantryServices.createPantryAndShoppingList(data, t);
+
+      return auth(user);
+    });
   }
 
   //
 
-  async login(userData) {
+  async login(userData: SignUpData) {
     const user = await userModel.findOne({ where: { email: userData.email } });
     if (!user) throw new Error404("Usuário não encontrado!");
     const match = await bcrypt.compare(userData.password, user.password);
@@ -81,7 +85,7 @@ class UserServices extends Services {
   }
 
   //Update
-  async updateAccount(data, userEmail) {
+  async updateAccount(data: {}, userEmail: string) {
     const response = await userModel.update(data, {
       where: { email: userEmail },
     });
@@ -89,7 +93,7 @@ class UserServices extends Services {
   }
 
   //Delete
-  async deactivateAccount(email, userEmail) {
+  async deactivateAccount(email: string, userEmail: string) {
     if (userEmail === email) {
       const response = await userModel.destroy({
         where: { email: userEmail },
@@ -101,4 +105,4 @@ class UserServices extends Services {
   }
 }
 
-module.exports = UserServices;
+export default UserServices;

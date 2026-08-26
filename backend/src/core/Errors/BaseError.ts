@@ -1,12 +1,17 @@
+import { Response } from "express";
+
 class BaseError extends Error {
-  constructor(message, status) {
+  status: number;
+
+  constructor(message?: string, status?: number) {
     super(message || "Erro no servidor! :(");
+
     this.status = status || 500;
   }
 
-  async response(res) {
+  response(res: Response) {
     res.status(this.status).json({ message: this.message });
   }
 }
 
-module.exports = BaseError;
+export default BaseError;

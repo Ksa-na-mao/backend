@@ -1,7 +1,8 @@
-const Unauthorized = require("../Errors/Unauthorized.js");
-const verifyToken = require("../../modules/user/jwt/verifyToken.js");
+import Unauthorized from "../Errors/Unauthorized.ts";
+import verifyToken from "./verifyToken.js";
+import { Request, Response, NextFunction } from "express";
 
-function verifyAccount(req, res, next) {
+function verifyAccount(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) {
     return next(new Unauthorized());
@@ -16,4 +17,4 @@ function verifyAccount(req, res, next) {
   }
 }
 
-module.exports = verifyAccount;
+export default verifyAccount;

@@ -1,7 +1,12 @@
-const exprees = require("express");
+import express, { Request, Response, NextFunction } from "express";
 const BaseError = require("./baseError");
 
-function ErrorHandler(error, req, res, next) {
+function ErrorHandler(
+  error: typeof BaseError,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   if (error instanceof BaseError) {
     res.status(error.status).json({ message: error.message });
   } else {
@@ -10,4 +15,4 @@ function ErrorHandler(error, req, res, next) {
   }
 }
 
-module.exports = ErrorHandler;
+export default ErrorHandler;

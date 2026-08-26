@@ -1,23 +1,35 @@
-const BadRequest = require("../../core/Errors/BadRequest.js");
+import BadRequest from "../Errors/BadRequest.js";
+import Services from "../Services/Services.js";
+import { Request, Response, NextFunction } from "express";
 
 class Controller {
-  constructor(service) {
+  protected service: Services;
+  constructor(service: Services) {
     this.service = service;
   }
 
-  async getAll(req, res, next) {
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const { where, offset, limit } = parseInt(req.query.offset) || 0;
-      const response = await this.service.getAll(where, offset, limit);
+      const { offset, limit, ...where } = req.query;
+
+      const parsedOffset = parseInt(offset as string) || 0;
+      const parsedLimit = parseInt(limit as string) || 5;
+
+      const response = await this.service.getAllUsers(
+        where,
+        parsedOffset,
+        parsedLimit,
+      );
+
       res.status(200).json(response);
     } catch (error) {
       next(error);
     }
   }
 
-  async getOneById(req, res, next) {
+  async getOneById(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const response = await this.service.getById(id);
       res.status(200).json(response);
     } catch (error) {
@@ -26,7 +38,7 @@ class Controller {
   }
 
   //Post
-  async post(req, res, next) {
+  async post(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user.userId;
       const data = req.body;
@@ -42,7 +54,7 @@ class Controller {
   }
 
   //Put
-  async update(req, res, next) {
+  async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id, creatorId } = req.query;
       const data = req.body;
@@ -54,7 +66,7 @@ class Controller {
   }
 
   //Delete
-  async delete(req, res, next) {
+  async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id, creatorId } = req.query;
       await this.service.delete(id, req.user.userId, creatorId);
@@ -65,4 +77,4 @@ class Controller {
   }
 }
 
-module.exports = Controller;
+export default Controller;

@@ -1,5 +1,5 @@
 const Controller = require("../../../core/Controller/Controller.js");
-const BaseError = require("../../../core/Errors/baseError.js");
+const BaseError = require("../../../core/Errors/BaseError.js");
 const PantryServices = require("./PantryServices.js");
 const pantryServices = new PantryServices();
 

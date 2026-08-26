@@ -1,5 +1,6 @@
-const Controller = require("../../core/Controller/Controller");
-const UserServices = require("./UserServices");
+import Controller from "../../core/Controller/Controller";
+import UserServices from "./UserServices";
+import { Request, Response, NextFunction } from "express";
 
 const userServices = new UserServices();
 
@@ -8,9 +9,9 @@ class UserController extends Controller {
     super(userServices);
   }
 
-  async getAllUsers(req, res, next) {
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const offset = parseInt(req.query.offset) || 0;
+      const offset = parseInt(req.query.offset as srting) || 0;
       const users = await userServices.getAllUsers(offset);
       res.status(200).json(users);
     } catch (error) {
@@ -18,7 +19,7 @@ class UserController extends Controller {
     }
   }
 
-  async getOneUser(req, res, next) {
+  async getOneUser(req: Request, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id);
       const users = await userServices.getUserById(id);
@@ -30,7 +31,7 @@ class UserController extends Controller {
 
   //Post
 
-  async signUp(req, res, next) {
+  async signUp(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.body;
       const token = await userServices.signUp(user);
@@ -40,7 +41,7 @@ class UserController extends Controller {
     }
   }
 
-  async login(req, res, next) {
+  async login(req: Request, res: Response, next: NextFunction) {
     try {
       const userData = req.body;
       const token = await userServices.login(userData);
@@ -51,7 +52,7 @@ class UserController extends Controller {
   }
 
   //Put
-  async updateAccount(req, res, next) {
+  async updateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const data = req.body;
       const userEmail = req.user.userEmail;
@@ -63,7 +64,7 @@ class UserController extends Controller {
   }
 
   //Delete
-  async deactivateAccount(req, res, next) {
+  async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const email = req.body;
       await userServices.deactivateAccount(email);
@@ -74,4 +75,4 @@ class UserController extends Controller {
   }
 }
 
-module.exports = UserController;
+export default UserController;

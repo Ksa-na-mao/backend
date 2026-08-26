@@ -63,38 +63,44 @@ class PantryServices extends Services {
 
   //Post
 
-  async createPantryAndShoppingList(data) {
-    if (data.userId) {
-      if (data.name) {
-        const response = await sequelize.transaction(async (t) => {
-          const [response, created] = await Pantry.findOrCreate({
-            where: {
-              name: data.name,
-              userId: data.userId,
-            },
-            defaults: data,
-            transaction: t,
-          });
-          if (created) {
-            await PantryUsers.create(
-              {
-                userId: data.userId,
-                pantryId: response[0].dataValues.id,
-              },
-              { transaction: t },
-            );
-            await ShoppingList.create(
-              {
-                pantryId: response[0].dataValues.id,
-              },
-              { transaction: t },
-            );
-            return response;
-          } else throw new BaseError("Já existe um estoque com esse nome.");
-        });
-        return response;
-      } else throw new BadRequest("O estoque precisa de um nome");
-    } else throw new BadRequest("O estoque precisa de um dono");
+  async createPantryAndShoppingList(data, t) {
+    if (!data.userId) {
+      throw new BadRequest("O estoque precisa de um dono");
+    }
+
+    if (!data.name) {
+      throw new BadRequest("O estoque precisa de um nome");
+    }
+
+    const [pantry, created] = await Pantry.findOrCreate({
+      where: {
+        name: data.name,
+        userId: data.userId,
+      },
+      defaults: data,
+      transaction: t,
+    });
+
+    if (!created) {
+      throw new BaseError("Já existe um estoque com esse nome.");
+    }
+
+    await PantryUsers.create(
+      {
+        userId: data.userId,
+        pantryId: pantry.id,
+      },
+      { transaction: t },
+    );
+
+    await ShoppingList.create(
+      {
+        pantryId: pantry.id,
+      },
+      { transaction: t },
+    );
+
+    return pantry;
   }
 
   //Update
