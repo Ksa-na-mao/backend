@@ -4,11 +4,13 @@ const sequelize = dataSource.sequelize;
 
 const BadRequest = require("../../../core/Errors/BadRequest.js");
 const Forbidden = require("../../../core/Errors/Forbidden.js");
+const { BaseError } = require("sequelize");
 
 const Pantry = dataSource["Pantry"];
 const PantryUsers = dataSource["PantryUser"];
 const PantryIngredient = dataSource["PantryIngredient"];
 const User = dataSource["User"];
+const ShoppingList = dataSource["ShoppingList"];
 
 class PantryServices extends Services {
   constructor() {
@@ -61,11 +63,11 @@ class PantryServices extends Services {
 
   //Post
 
-  async post(data) {
+  async createPantryAndShoppingList(data) {
     if (data.userId) {
       if (data.name) {
         const response = await sequelize.transaction(async (t) => {
-          const response = await Pantry.findOrCreate({
+          const [response, created] = await Pantry.findOrCreate({
             where: {
               name: data.name,
               userId: data.userId,
@@ -73,14 +75,22 @@ class PantryServices extends Services {
             defaults: data,
             transaction: t,
           });
-          await PantryUsers.create(
-            {
-              userId: data.userId,
-              pantryId: response[0].dataValues.id,
-            },
-            { transaction: t },
-          );
-          return response;
+          if (created) {
+            await PantryUsers.create(
+              {
+                userId: data.userId,
+                pantryId: response[0].dataValues.id,
+              },
+              { transaction: t },
+            );
+            await ShoppingList.create(
+              {
+                pantryId: response[0].dataValues.id,
+              },
+              { transaction: t },
+            );
+            return response;
+          } else throw new BaseError("Já existe um estoque com esse nome.");
         });
         return response;
       } else throw new BadRequest("O estoque precisa de um nome");

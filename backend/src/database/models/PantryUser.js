@@ -5,10 +5,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       PantryUser.belongsTo(models.User, {
         foreignKey: "userId",
+        onDelete: "CASCADE",
+        hooks: true,
       });
 
       PantryUser.belongsTo(models.Pantry, {
         foreignKey: "pantryId",
+        onDelete: "CASCADE",
+        hooks: true,
       });
     }
   }

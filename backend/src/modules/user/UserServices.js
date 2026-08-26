@@ -12,6 +12,9 @@ const userModel = dataSource["User"];
 const pantryModel = dataSource["Pantry"];
 const sequelize = dataSource.sequelize;
 
+const PantryServices = require("../PANTRY/pantry/PantryServices.js");
+const pantryServices = new PantryServices();
+
 class UserServices extends Services {
   constructor() {
     super("User");
@@ -50,15 +53,10 @@ class UserServices extends Services {
       });
 
       if (created) {
-        await pantryModel.create(
-          {
-            userId: user.id,
-            name: "Meu estoque",
-          },
-          {
-            transaction: t,
-          },
-        );
+        const data = {};
+        data.userId = user.userId;
+        data.name = "Primeiro estoque!";
+        pantryServices.createPantryAndShoppingList(data);
         const token = auth(user);
         return token;
       } else {

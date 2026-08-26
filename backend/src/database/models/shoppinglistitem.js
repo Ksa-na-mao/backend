@@ -6,10 +6,20 @@ module.exports = (sequelize, DataTypes) => {
       ShoppingListItem.belongsTo(models.Pantry, {
         foreignKey: "pantryId",
         as: "pantryList",
+        onDelete: "CASCADE",
+        hooks: true,
       });
       ShoppingListItem.belongsTo(models.Ingredient, {
         foreignKey: "ingredientId",
         as: "ingredientList",
+        onDelete: "CASCADE",
+        hooks: true,
+      });
+      ShoppingListItem.belongsTo(models.ShoppingList, {
+        foreignKey: "ShoppingListId",
+        as: "shoppingList",
+        onDelete: "CASCADE",
+        hooks: true,
       });
     }
   }
@@ -22,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       pantryId: {
         type: DataTypes.INTEGER,
         references: { model: "pantry", key: "id" },
+      },
+      shoppingListId: {
+        type: DataTypes.INTEGER,
+        references: { model: "ShoppingList", key: "id" },
       },
       purchased: { type: DataTypes.BOOLEAN, defaultValue: false },
       purchasedAt: { type: DataTypes.DATE },
