@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-const BaseError = require("./baseError");
+import BaseError from "./BaseError";
 
 function ErrorHandler(
   error: typeof BaseError,

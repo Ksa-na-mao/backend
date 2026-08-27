@@ -11,8 +11,10 @@ class UserController extends Controller {
 
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const offset = parseInt(req.query.offset as srting) || 0;
-      const users = await userServices.getAllUsers(offset);
+      const where = req.query;
+      const offset = parseInt(req.query.offset as string) || 0;
+      const limit = parseInt(req.query.offset as string) || 0;
+      const users = await userServices.getAllUsers(where, offset, limit);
       res.status(200).json(users);
     } catch (error) {
       next(error);
@@ -21,7 +23,7 @@ class UserController extends Controller {
 
   async getOneUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id);
+      const id = Number(req.params.id);
       const users = await userServices.getUserById(id);
       res.status(200).json(users);
     } catch (error) {
@@ -56,7 +58,7 @@ class UserController extends Controller {
     try {
       const data = req.body;
       const userEmail = req.user.userEmail;
-      await userServices.update(data, userEmail);
+      await userServices.updateAccount(data, userEmail);
       res.status(201).json("Conta atualizada com sucesso!");
     } catch (error) {
       next(error);
@@ -67,7 +69,8 @@ class UserController extends Controller {
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const email = req.body;
-      await userServices.deactivateAccount(email);
+      const userEmail = req.user!.email;
+      await userServices.deactivateAccount(email, userEmail);
       res.status(201).json("Conta desativada!");
     } catch (error) {
       next(error);

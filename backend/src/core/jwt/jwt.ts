@@ -1,11 +1,16 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { AuthUser } from "../types/user/authUser.ts";
 
-function jwtSign(user) {
-  const userId = user.id;
-  const userRole = user.role;
-  const userEmail = user.email;
-  const userObj = { userId, userRole, userEmail };
-  return jwt.sign(userObj, process.env.privateKeyJson, { expiresIn: "1w" });
+function jwtSign(user: { id: number; role: string; email: string }) {
+  const userObj: AuthUser = {
+    userId: user.id,
+    role: user.role,
+    userEmail: user.email,
+  };
+
+  return jwt.sign(userObj, process.env.privateKeyJson as string, {
+    expiresIn: "1w",
+  });
 }
 
 export default jwtSign;

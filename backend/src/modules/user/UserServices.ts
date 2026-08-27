@@ -16,7 +16,7 @@ const sequelize = dataSource.sequelize;
 
 const pantryServices = new PantryServices();
 
-import { SignUpData } from "../../core/types/user/user.ts";
+import { SignUpData, updateData } from "../../core/types/user/user.ts";
 
 class UserServices extends Services {
   constructor() {
@@ -50,10 +50,16 @@ class UserServices extends Services {
   //Post
 
   async signUp(userData: SignUpData) {
-    return await sequelize.transaction(async (t: any) => {
+    return await sequelize.transaction(async (t) => {
       const [user, created] = await userModel.findOrCreate({
-        where: { email: userData.email },
-        defaults: userData,
+        where: {
+          email: userData.email,
+        },
+        defaults: {
+          email: userData.email,
+          password: userData.password,
+          name: userData.name,
+        },
         transaction: t,
       });
 
@@ -62,7 +68,7 @@ class UserServices extends Services {
       }
 
       const data = {
-        userId: user.userId,
+        userId: user.id,
         name: "Primeiro estoque!",
       };
 
@@ -85,7 +91,7 @@ class UserServices extends Services {
   }
 
   //Update
-  async updateAccount(data: {}, userEmail: string) {
+  async updateAccount(data: updateData, userEmail: string) {
     const response = await userModel.update(data, {
       where: { email: userEmail },
     });

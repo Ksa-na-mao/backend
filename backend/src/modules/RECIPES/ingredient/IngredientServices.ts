@@ -1,6 +1,7 @@
 import Services from "../../../core/Services/Services";
 import dataSource from "../../../database/models";
 import BadRequest from "../../../core/Errors/BadRequest";
+import { ingredient } from "../../../core/types/ingredient/ingredient.ts";
 
 const model = dataSource.Ingredient;
 
@@ -9,11 +10,11 @@ class IngredientServices extends Services {
     super("Ingredient");
   }
 
-  async post(data: any) {
+  async post(data: ingredient) {
     if (data.name) {
       const response = await model.findOrCreate({
         where: { name: data.name },
-        defaults: data,
+        defaults: { name: data.name, userId: data.userId },
       });
 
       return response;

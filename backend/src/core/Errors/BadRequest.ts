@@ -1,4 +1,4 @@
-const BaseError = require("./baseError");
+import BaseError from "./BaseError";
 
 class BadRequest extends BaseError {
   constructor(message: string, status?: Number) {
