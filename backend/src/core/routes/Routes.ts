@@ -1,8 +1,11 @@
 import express, { Express } from "express";
+
 import users from "../../modules/user/userRoutes.js";
 import recipes from "../../modules/RECIPES/recipe/recipesRoutes.js";
-import ingredients from "express";
-import recipeingredients from "../../modules/RECIPES/ingredient/ingredientsRoutes.js";
+
+import ingredients from "../../modules/RECIPES/ingredient/ingredientsRoutes.js";
+import recipeingredients from "../../modules/RECIPES/recipeIngredient/recipeIngredientsRoutes.js";
+
 import pantry from "../../modules/PANTRY/pantry/pantriesRoutes.js";
 import pantryIngredient from "../../modules/PANTRY/pantryIngridient/pantryIngredientsRoutes.js";
 
