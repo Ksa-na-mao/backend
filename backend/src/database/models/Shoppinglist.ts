@@ -9,7 +9,7 @@ class ShoppingList extends Model {
       hooks: true,
     });
     ShoppingList.hasMany(models.ShoppingListItem, {
-      foreignKey: "ShoppingListId",
+      foreignKey: "shoppingListId",
       as: "ingredients",
     });
   }

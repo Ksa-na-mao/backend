@@ -38,12 +38,6 @@ class User extends Model {
       otherKey: "pantryId",
       as: "pantries",
     });
-
-    User.hasOne(models.ShoppingList, {
-      foreignKey: "userId",
-      as: "MyList",
-    });
-
     User.hasOne(models.PreparationHistory, {
       foreignKey: "userId",
       as: "MyHistory",

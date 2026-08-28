@@ -2,10 +2,14 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 
 class Like extends Model {
   static associate(models: any) {
-    Like.belongsTo(models.User, { foreignKey: "userId", as: "userLiked" });
+    Like.belongsTo(models.User, {
+      foreignKey: "userId",
+      as: "user",
+    });
+
     Like.belongsTo(models.Recipe, {
       foreignKey: "recipeId",
-      as: "recipeLiked",
+      as: "recipe",
     });
   }
 }

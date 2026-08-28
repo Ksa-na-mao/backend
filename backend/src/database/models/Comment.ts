@@ -9,12 +9,12 @@ class Comment extends Model {
   static associate(models: any) {
     Comment.belongsTo(models.User, {
       foreignKey: "userId",
-      as: "userHistory",
+      as: "user",
     });
 
     Comment.belongsTo(models.Recipe, {
       foreignKey: "recipeId",
-      as: "recipeHistory",
+      as: "recipe",
     });
   }
 }

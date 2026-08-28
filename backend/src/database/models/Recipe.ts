@@ -10,11 +10,16 @@ class Recipe extends Model {
   declare category: string;
 
   static associate(models: any) {
-    Recipe.belongsTo(models.User, { foreignKey: "userId", as: "userRecipe" });
+    Recipe.belongsTo(models.User, {
+      foreignKey: "userId",
+      as: "userRecipe",
+    });
+
     Recipe.hasMany(models.Notification, {
       foreignKey: "recipeId",
-      as: "recipe",
+      as: "notifications",
     });
+
     Recipe.hasMany(models.Recipe, {
       foreignKey: "originRecipeId",
       as: "copied",
@@ -24,17 +29,20 @@ class Recipe extends Model {
       foreignKey: "originRecipeId",
       as: "original",
     });
-    Recipe.hasOne(models.PreparationHistory, {
+
+    Recipe.hasMany(models.PreparationHistory, {
       foreignKey: "recipeId",
-      as: "usersRecipe",
+      as: "preparationHistories",
     });
+
     Recipe.hasMany(models.RecipeIngredient, {
       foreignKey: "recipeId",
       as: "recipeIngredients",
     });
+
     Recipe.hasMany(models.Like, {
       foreignKey: "recipeId",
-      as: "recipeLiked",
+      as: "likes",
     });
   }
 }

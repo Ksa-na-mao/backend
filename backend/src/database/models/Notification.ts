@@ -11,8 +11,8 @@ class Notification extends Model {
       as: "actor",
     });
     Notification.belongsTo(models.Recipe, {
-      foreignKey: "recepiesId",
-      as: "recepie",
+      foreignKey: "recipeId",
+      as: "recipe",
     });
   }
 }
