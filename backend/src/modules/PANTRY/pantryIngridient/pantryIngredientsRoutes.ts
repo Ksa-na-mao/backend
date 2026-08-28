@@ -15,7 +15,7 @@ Router.post(
 );
 
 Router.patch(
-  " ",
+  "/pantryIngredient/update/:pantryId/:ingredientId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     pantryIngredientController.update(req, res, next),

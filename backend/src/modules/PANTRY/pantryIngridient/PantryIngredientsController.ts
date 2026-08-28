@@ -30,7 +30,7 @@ class PantryIngredientController extends Controller {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const data = req.body;
-      const ingredientId = Number(req.params.IngredientId);
+      const ingredientId = Number(req.params.ingredientId);
       const pantryId = Number(req.params.pantryId);
       const response = await pantryIngredientServices.updateIngredient(
         data,
@@ -47,7 +47,7 @@ class PantryIngredientController extends Controller {
   //Delete
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const ingredientId = Number(req.params.IngredientId);
+      const ingredientId = Number(req.params.ingredientId);
       const pantryId = Number(req.params.pantryId);
       const userId = req.user.userId;
       await pantryIngredientServices.deleteIngredient(
