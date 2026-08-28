@@ -42,7 +42,7 @@ Router.put(
     recipeController.updateMyRecipe(req, res, next),
 );
 Router.delete(
-  "/recipe/delete/:recipeId/:userId",
+  "/recipe/delete/:recipeId/",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeController.deleteRecipe(req, res, next),
