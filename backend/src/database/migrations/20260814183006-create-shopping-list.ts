@@ -9,11 +9,6 @@ export default {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
       pantryId: {
         type: DataTypes.INTEGER,
         allowNull: false,

@@ -27,10 +27,10 @@ class PantryServices extends Services {
   }
 
   async getPantryInfos(id: number, userId: number) {
+    console.log(id);
+    console.log(userId);
     const pantries = await PantryUsers.findAll({ where: { userId: userId } });
-    const isAllowed = pantries.map((pantry) => {
-      if (pantry.pantryId === Number(id)) return true;
-    });
+    const isAllowed = pantries.some((pantry) => pantry.pantryId === Number(id));
     if (isAllowed) {
       const pantry = await Pantry.findOne({
         where: { id: id },
@@ -41,7 +41,7 @@ class PantryServices extends Services {
           },
           {
             model: User,
-            as: "userPantry",
+            as: "users",
             attributes: {
               exclude: [
                 "password",
@@ -54,6 +54,10 @@ class PantryServices extends Services {
                 "email",
               ],
             },
+          },
+          {
+            model: ShoppingList,
+            as: "PantrysShopping",
           },
         ],
       });
@@ -145,7 +149,7 @@ class PantryServices extends Services {
 
   //Delete
 
-  async delete(pantryId: number, creatorId: number, userId: number) {
+  async deletePantry(pantryId: number, creatorId: number, userId: number) {
     const response = await PantryUsers.findAll({
       where: { pantryId: pantryId },
     });
