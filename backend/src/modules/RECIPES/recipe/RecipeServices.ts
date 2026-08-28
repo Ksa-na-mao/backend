@@ -1,6 +1,7 @@
 import Services from "../../../core/Services/Services";
 import dataSource from "../../../database/models";
 import Forbidden from "../../../core/Errors/Forbidden";
+import Error404 from "../../../core/Errors/Error404";
 import { recipePost, recipeUpdate } from "../../../core/types/recipe/recipe.ts";
 
 const RecipeIngredient = dataSource.RecipeIngredient;
@@ -96,15 +97,22 @@ class RecipeServices extends Services {
   //Delete
   async deleteRecipe(
     recipeId: number,
-    userIdRecipe: number,
-    userId: number,
-    userRole: string,
+    requesterId: number,
+    requesterRole: string
   ) {
-    if (userIdRecipe === userId || userRole === "admin") {
-      await recipeModel.destroy({ where: { id: recipeId } });
+    const recipe = await recipeModel.findByPk(recipeId)
+
+    if (!recipe) {
+      throw new Error404("receita nao encontra!");
     }
-    throw new Forbidden("Não apague as coisas dos outros... é errado!");
+
+    if (recipe.userId !== requesterId && requesterRole !== "admin") {
+      throw new Forbidden(
+        "você nao pode apagar a receita dos outros... isso é mt errado"
+      );
+    }
+    await recipe.destroy();
+
   }
 }
-
 export default RecipeServices;
