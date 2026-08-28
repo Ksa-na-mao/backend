@@ -20,7 +20,7 @@ export default (sequelize: Sequelize) => {
       status: DataTypes.STRING,
       pantryId: {
         type: DataTypes.INTEGER,
-        references: { model: "Pantry", key: "id" },
+        references: { model: "Pantries", key: "id" },
       },
     },
     {

@@ -14,7 +14,10 @@ export default {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-
+      pantryId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       status: {
         type: DataTypes.STRING,
       },

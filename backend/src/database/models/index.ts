@@ -15,15 +15,10 @@ import PreparationHistory from "./preparationhistory";
 import Notification from "./Notification";
 import Like from "./Like";
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME as string,
-  process.env.DB_USER as string,
-  process.env.DB_PASSWORD as string,
-  {
-    host: process.env.DB_HOST,
-    dialect: "sqlite",
-  },
-);
+const sequelize = new Sequelize({
+  dialect: "sqlite",
+  storage: "./src/database/database.sqlite",
+});
 
 const CommentModel = Comment(sequelize);
 const FollowerModel = Follower(sequelize);
@@ -56,6 +51,12 @@ const db = {
   Like: LikeModel,
   User: UserModel,
 };
+
+Object.values(db).forEach((model: any) => {
+  if (model.associate) {
+    model.associate(db);
+  }
+});
 
 export type ModelName = keyof typeof db;
 

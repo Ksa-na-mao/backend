@@ -67,6 +67,7 @@ class PantryServices extends Services {
   //Post
 
   async createPantryAndShoppingList(data: dataPost, t?: Transaction) {
+    console.log(data.userId);
     if (!data.userId) {
       throw new BadRequest("O estoque precisa de um dono");
     }
@@ -103,6 +104,7 @@ class PantryServices extends Services {
       await ShoppingList.create(
         {
           pantryId: pantry.id,
+          userId: data.userId,
         },
         { transaction },
       );

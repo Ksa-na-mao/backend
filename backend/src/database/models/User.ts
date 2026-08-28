@@ -10,36 +10,50 @@ class User extends Model {
   declare bio: string;
   declare pfp: string;
   declare role: string;
+
   static associate(models: any) {
     User.hasMany(models.Notification, {
       foreignKey: "userId",
       as: "userNotifications",
     });
+
     User.hasMany(models.Notification, {
       foreignKey: "actorUserId",
       as: "actorUserId",
     });
+
     User.hasMany(models.Recipe, {
       foreignKey: "userId",
       as: "userRecepies",
     });
+
     User.hasMany(models.Ingredient, {
       foreignKey: "userId",
       as: "ingredients",
     });
-    User.hasMany(models.Pantry, {
-      foreignKey: "userId",
-      as: "pantrys",
-    });
+
     User.belongsToMany(models.Pantry, {
       through: "PantryUser",
+      foreignKey: "userId",
+      otherKey: "pantryId",
+      as: "pantries",
     });
-    User.hasOne(models.ShoppingList, { foreignKey: "userId", as: "MyList" });
+
+    User.hasOne(models.ShoppingList, {
+      foreignKey: "userId",
+      as: "MyList",
+    });
+
     User.hasOne(models.PreparationHistory, {
       foreignKey: "userId",
       as: "MyHistory",
     });
-    User.hasMany(models.Like, { foreignKey: "userId", as: "liked" });
+
+    User.hasMany(models.Like, {
+      foreignKey: "userId",
+      as: "liked",
+    });
+
     User.belongsToMany(User, {
       through: "Follows",
       as: "following",

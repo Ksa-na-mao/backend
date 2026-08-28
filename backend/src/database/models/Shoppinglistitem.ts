@@ -27,15 +27,15 @@ export default (sequelize: Sequelize) => {
     {
       ingredientId: {
         type: DataTypes.INTEGER,
-        references: { model: "ingredient", key: "id" },
+        references: { model: "Ingredients", key: "id" },
       },
       pantryId: {
         type: DataTypes.INTEGER,
-        references: { model: "pantry", key: "id" },
+        references: { model: "Pantries", key: "id" },
       },
       shoppingListId: {
         type: DataTypes.INTEGER,
-        references: { model: "ShoppingList", key: "id" },
+        references: { model: "ShoppingLists", key: "id" },
       },
       purchased: { type: DataTypes.BOOLEAN, defaultValue: false },
       purchasedAt: { type: DataTypes.DATE },

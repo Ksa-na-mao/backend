@@ -2,7 +2,6 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 
 class Pantry extends Model {
   declare id: number;
-  declare userId: number;
   declare name: string;
 
   static associate(models: any) {
@@ -10,7 +9,7 @@ class Pantry extends Model {
       through: "PantryUser",
       foreignKey: "pantryId",
       otherKey: "userId",
-      as: "userPantry",
+      as: "users",
     });
 
     Pantry.hasMany(models.PantryIngredient, {

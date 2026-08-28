@@ -21,7 +21,7 @@ export default (sequelize: Sequelize) => {
     {
       recipeId: {
         type: DataTypes.INTEGER,
-        references: { model: "Recipe", key: "id" },
+        references: { model: "Recipes", key: "id" },
         allowNull: false,
         validate: {
           notNull: {
@@ -31,7 +31,7 @@ export default (sequelize: Sequelize) => {
       },
       ingredientId: {
         type: DataTypes.INTEGER,
-        references: { model: "Ingredient", key: "id" },
+        references: { model: "Ingredients", key: "id" },
         allowNull: false,
         validate: {
           notNull: { msg: "A receita precisa ter pelo menos um ingrediente!" },

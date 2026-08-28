@@ -26,7 +26,12 @@ class UserServices extends Services {
 
   async getAllUsers(where: any, offset: number, limit: number) {
     const users = await userModel.findAll({
-      include: [{ model: pantryModel, as: "pantrys" }],
+      include: [
+        {
+          model: pantryModel,
+          as: "pantries",
+        },
+      ],
       attributes: {
         exclude: ["password", "updatedAt"],
       },
@@ -34,7 +39,6 @@ class UserServices extends Services {
       offset,
       limit,
     });
-
     return users;
   }
 

@@ -13,8 +13,9 @@ class UserController extends Controller {
     try {
       const where = req.query;
       const offset = parseInt(req.query.offset as string) || 0;
-      const limit = parseInt(req.query.offset as string) || 0;
+      const limit = parseInt(req.query.offset as string) || 5;
       const users = await userServices.getAllUsers(where, offset, limit);
+      console.log(users);
       res.status(200).json(users);
     } catch (error) {
       next(error);

@@ -26,7 +26,7 @@ export default (sequelize: Sequelize) => {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: "User", key: "id" },
+        references: { model: "Users", key: "id" },
       },
       name: { type: DataTypes.STRING, allowNull: false },
     },

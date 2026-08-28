@@ -25,7 +25,7 @@ export default (sequelize: Sequelize) => {
       userId: {
         type: DataTypes.INTEGER,
         references: {
-          model: "User",
+          model: "Users",
           key: "id",
         },
         allowNull: false,
@@ -34,7 +34,7 @@ export default (sequelize: Sequelize) => {
       recipeId: {
         type: DataTypes.INTEGER,
         references: {
-          model: "Recipe",
+          model: "Recipes",
           key: "id",
         },
         allowNull: true,

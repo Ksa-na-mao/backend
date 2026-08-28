@@ -17,12 +17,12 @@ export default (sequelize: Sequelize) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        references: { model: "User", key: "id" },
+        references: { model: "Users", key: "id" },
         allowNull: false,
       },
       recipeId: {
         type: DataTypes.INTEGER,
-        references: { model: "Recipe", key: "id" },
+        references: { model: "Recipes", key: "id" },
         allowNull: true,
       },
       date: DataTypes.DATE,

@@ -22,12 +22,12 @@ export default (sequelize: Sequelize) => {
     {
       ingredientId: {
         type: DataTypes.INTEGER,
-        references: { model: "ingredient", key: "id" },
+        references: { model: "Ingredients", key: "id" },
         allowNull: false,
       },
       pantryId: {
         type: DataTypes.INTEGER,
-        references: { model: "Pantry", key: "id" },
+        references: { model: "Pantries", key: "id" },
         allowNull: false,
       },
       currentQuantity: { type: DataTypes.FLOAT, defaultValue: 0 },

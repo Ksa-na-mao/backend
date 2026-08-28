@@ -23,12 +23,12 @@ export default (sequelize: Sequelize) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        references: { model: "User", key: "id" },
+        references: { model: "Users", key: "id" },
         allowNull: false,
       },
       pantryId: {
         type: DataTypes.INTEGER,
-        references: { model: "Pantry", key: "id" },
+        references: { model: "Pantries", key: "id" },
         allowNull: false,
       },
     },

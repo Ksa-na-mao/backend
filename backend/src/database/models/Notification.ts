@@ -21,15 +21,15 @@ export default (sequelize: Sequelize) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        references: { model: "User", key: "user" },
+        references: { model: "Users", key: "user" },
       },
       actorId: {
         type: DataTypes.INTEGER,
-        references: { model: "User", key: "actor" },
+        references: { model: "Users", key: "actor" },
       },
       recipeId: {
         type: DataTypes.INTEGER,
-        references: { model: "recepiesId", key: "recepie" },
+        references: { model: "Recipes", key: "recepie" },
       },
       type: { type: DataTypes.STRING, allowNull: false },
       isSeen: {
