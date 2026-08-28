@@ -1,13 +1,10 @@
 import express, { Express } from "express";
-
-import users from "../../modules/user/userRoutes.js";
-import recipes from "../../modules/RECIPES/recipe/recipesRoutes.js";
-
-import ingredients from "../../modules/RECIPES/ingredient/ingredientsRoutes.js";
-import recipeingredients from "../../modules/RECIPES/recipeIngredient/recipeIngredientsRoutes.js";
-
-import pantry from "../../modules/PANTRY/pantry/pantriesRoutes.js";
-import pantryIngredient from "../../modules/PANTRY/pantryIngridient/pantryIngredientsRoutes.js";
+import users from "../../modules/user/userRoutes.ts";
+import recipes from "../../modules/RECIPES/recipe/recipesRoutes.ts";
+import ingredients from "../../modules/RECIPES/ingredient/ingredientsRoutes.ts";
+import recipeingredients from "../../modules/RECIPES/recipeIngredient/recipeIngredientsRoutes.ts";
+import pantry from "../../modules/PANTRY/pantry/pantriesRoutes.ts";
+import pantryIngredient from "../../modules/PANTRY/pantryIngridient/pantryIngredientsRoutes.ts";
 
 function Routes(app: Express) {
   app.use(express.json());
