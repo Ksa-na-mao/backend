@@ -27,45 +27,46 @@ class PantryServices extends Services {
   }
 
   async getPantryInfos(id: number, userId: number) {
-    console.log(id);
-    console.log(userId);
-    const pantries = await PantryUsers.findAll({ where: { userId: userId } });
-    const isAllowed = pantries.some((pantry) => pantry.pantryId === Number(id));
-    if (isAllowed) {
-      const pantry = await Pantry.findOne({
-        where: { id: id },
-        include: [
-          {
-            model: PantryIngredient,
-            as: "allPantryIngredients",
+    const membership = await PantryUsers.findOne({
+      where: {
+        pantryId: id,
+        userId,
+      },
+    });
+
+    if (!membership) {
+      throw new Forbidden("Você nao quer ver isso...");
+    }
+    const pantry = await Pantry.findOne({
+      where: { id },
+      include: [
+        {
+          model: PantryIngredient,
+          as: "allPantryIngredients",
+        },
+        {
+          model: User,
+          as: "userPantry",
+          attributes: {
+            exclude: [
+              "password",
+              "updatedAt",
+              "bio",
+              "pfp",
+              "role",
+              "createdAt",
+              "deletedAt",
+              "email",
+            ],
           },
-          {
-            model: User,
-            as: "users",
-            attributes: {
-              exclude: [
-                "password",
-                "updatedAt",
-                "bio",
-                "pfp",
-                "role",
-                "createdAt",
-                "deletedAt",
-                "email",
-              ],
-            },
-          },
-          {
-            model: ShoppingList,
-            as: "PantrysShopping",
-          },
-        ],
-      });
-      return pantry;
-    } else
-      throw new Forbidden(
-        "Você não deveria pegar informações das outras pessoas.",
-      );
+        },
+        {
+          model: ShoppingList,
+          as: "PantrysShopping",
+        },
+      ],
+    });
+    return pantry;
   }
 
   //Post

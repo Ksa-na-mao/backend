@@ -22,7 +22,7 @@ Router.get("/user/:id", verifyAccount, (req, res, next) =>
   userController.getOneUser(req, res, next),
 );
 
-Router.delete("/user/deactivate/:id", verifyAccount, (req, res, next) =>
+Router.delete("/user/deactivate", verifyAccount, (req, res, next) =>
   userController.deactivateAccount(req, res, next),
 );
 

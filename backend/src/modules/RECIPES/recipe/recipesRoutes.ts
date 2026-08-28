@@ -36,13 +36,13 @@ Router.post(
     recipeController.post(req, res, next),
 );
 Router.put(
-  "/recipe/update/:recipeId/:userId",
+  "/recipe/update/:recipeId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeController.updateMyRecipe(req, res, next),
 );
 Router.delete(
-  "/recipe/delete/:recipeId/:userId",
+  "/recipe/delete/:recipeId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeController.deleteRecipe(req, res, next),

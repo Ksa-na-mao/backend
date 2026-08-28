@@ -86,19 +86,16 @@ class RecipeController extends Controller {
   async deleteRecipe(req: Request, res: Response, next: NextFunction) {
     try {
       const recipeId = Number(req.params.recipeId);
-      const userIdRecipe = Number(req.params.userIdRecipe);
-      const { userId, userRole } = req.user;
-      await recipeServices.deleteRecipe(
-        recipeId,
-        userIdRecipe,
-        userId,
-        userRole,
-      );
-      res.status(200).json({ message: "Receita apagada com sucesso" });
+      const { userId, role } = req.user!;
+
+      await recipeServices.deleteRecipe(recipeId, userId, role);
+
+      res.status(200).json({
+        message: "receita apagada com sucesso, beijo.",
+      });
     } catch (error) {
       next(error);
     }
   }
 }
-
 export default RecipeController;
