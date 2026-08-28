@@ -40,18 +40,17 @@ export default (sequelize: Sequelize) => {
       quantity: {
         type: DataTypes.FLOAT,
         validate: {
-          args: [1],
-          msg: "A quantidade precisa ser maior que um.",
+          min: {
+            args: [1],
+            msg: "A quantidade precisa ser maior ou igual a 1.",
+          },
         },
       },
+
       unit: {
         type: DataTypes.ENUM,
         values: ["kg", "g", "ml", "L", "unidade"],
         defaultValue: "g",
-        validate: {
-          args: [1],
-          msg: "A unidade deve possuir pelo menos 1 caractere.",
-        },
       },
     },
     {

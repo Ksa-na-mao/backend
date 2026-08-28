@@ -7,13 +7,12 @@ class RecipeingredientController extends Controller {
   constructor() {
     super(recipeingredientServices);
   }
+
   //Post
   async post(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.user.userId;
       const data = req.body;
-      const allData = { data, userId };
-      const response = await recipeingredientServices.post(allData);
+      const response = await recipeingredientServices.post(data);
       res.status(200).json(response);
     } catch (error) {
       next(error);
