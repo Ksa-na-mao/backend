@@ -40,6 +40,7 @@ class PantryController extends Controller {
     try {
       const data = req.body;
       const response = await pantryServices.createPantryAndShoppingList(data);
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
