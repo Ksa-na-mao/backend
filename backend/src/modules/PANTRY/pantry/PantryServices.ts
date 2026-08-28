@@ -119,7 +119,7 @@ class PantryServices extends Services {
     return sequelize.transaction(execute);
   }
   //Update
-  async update(
+  async updatePantry(
     data: dataUpdate,
     id: number,
     userId: number,

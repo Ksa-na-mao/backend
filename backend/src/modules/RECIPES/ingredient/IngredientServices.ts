@@ -10,14 +10,14 @@ class IngredientServices extends Services {
     super("Ingredient");
   }
 
-  async post(data: ingredient) {
+  async post(data: ingredient, userId: number) {
     if (data.name) {
-      const response = await model.findOrCreate({
+      const [response, created] = await model.findOrCreate({
         where: { name: data.name },
-        defaults: { name: data.name, userId: data.userId },
+        defaults: { name: data.name, userId: userId },
       });
-
-      return response;
+      if (created) return response;
+      else throw new BadRequest("Esse ingrediente já existe!");
     }
 
     throw new BadRequest("O ingrediente precisa de um nome");

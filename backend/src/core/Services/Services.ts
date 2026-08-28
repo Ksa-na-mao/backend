@@ -3,6 +3,7 @@ import dataSource, { ModelName } from "../../database/models";
 
 import BadRequest from "../Errors/BadRequest";
 import Forbidden from "../Errors/Forbidden";
+import { Op } from "sequelize";
 
 class Services {
   protected model: ModelName;
@@ -13,6 +14,7 @@ class Services {
 
   // Get
   async getAll(where: any, offset: number, limit: number) {
+    console.log("AAAAAAAAAAAA");
     const data = await dataSource[this.model].findAll({
       where,
       offset: offset || 0,
@@ -31,25 +33,36 @@ class Services {
   }
 
   // Update
-  async update(
-    data: any,
-    id: number,
-    userId: number | undefined,
-    creatorId: number,
-  ) {
+  async update(data: any, id: number, userId: number | undefined) {
     if (!data) {
       throw new BadRequest("Você precisa mudar algo para atualizar!");
     }
 
-    if (userId === Number(creatorId)) {
-      const update = await dataSource[this.model].update(data, {
-        where: { id },
+    const exists = await dataSource[this.model].findOne({
+      where: {
+        name: data.name,
+      },
+    });
+
+    if (!exists) {
+      const creator = await dataSource[this.model].findOne({
+        where: {
+          id,
+          userId,
+        },
       });
-
-      return update;
-    }
-
-    throw new Forbidden("Você só pode atualizar as suas próprias coisas!");
+      if (creator) {
+        const update = await dataSource[this.model].update(data, {
+          where: {
+            id,
+            userId,
+          },
+        });
+        if (update) return update;
+        else throw new BadRequest("Esse elemento já ");
+      }
+      throw new Forbidden("Você só pode atualizar as suas próprias coisas!");
+    } else throw new BadRequest("Já existe um elemento com esse nome.");
   }
 
   // Delete
