@@ -68,14 +68,17 @@ class UserController extends Controller {
 
   //Delete
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
-    try {
-      const email = req.body;
-      const userEmail = req.user!.email;
-      await userServices.deactivateAccount(email, userEmail);
-      res.status(201).json("Conta desativada!");
-    } catch (error) {
-      next(error);
+    try{
+      const userId = req.user!.userId;
+
+      await userServices.deactivateAccount(userId);
+      res.status(200).json({
+        message: "conta desativada com sucesso"
+      });
+    } catch(error){
+      next(error)
     }
+    
   }
 }
 

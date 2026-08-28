@@ -103,16 +103,14 @@ class UserServices extends Services {
   }
 
   //Delete
-  async deactivateAccount(email: string, userEmail: string) {
-    if (userEmail === email) {
-      const response = await userModel.destroy({
-        where: { email: userEmail },
-      });
-      return response;
-    } else {
-      throw new Forbidden("Você só pode desativar a sua conta!");
+  async deactivateAccount(userId: number) {
+    const deleted = await userModel.destroy({
+      where: { id: userId },
+    });
+    if(!deleted){
+      throw new Error404("usuario nao encontrado")
     }
+    return deleted;
   }
 }
-
 export default UserServices;
