@@ -126,7 +126,9 @@ class PantryIngredientServices extends Services {
     userId: number,
   ) {
     if (await this.getPantryUsersId(pantryId, userId)) {
-      await PantryIngredient.destroy({ where: { ingredientId: ingredientId } });
+      await PantryIngredient.destroy({
+        where: { ingredientId: ingredientId, pantryId },
+      });
     } else {
       throw new Forbidden();
     }
