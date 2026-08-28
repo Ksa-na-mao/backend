@@ -27,41 +27,45 @@ class PantryServices extends Services {
   }
 
   async getPantryInfos(id: number, userId: number) {
-    const pantries = await PantryUsers.findAll({ where: { userId: userId } });
-    const isAllowed = pantries.map((pantry) => {
-      if (pantry.pantryId === Number(id)) return true;
+    const membership = await PantryUsers.findOne({
+      where: {
+        pantryId: id,
+        userId,
+      },
     });
-    if (isAllowed) {
-      const pantry = await Pantry.findOne({
-        where: { id: id },
-        include: [
-          {
-            model: PantryIngredient,
-            as: "allPantryIngredients",
-          },
-          {
-            model: User,
-            as: "userPantry",
-            attributes: {
-              exclude: [
-                "password",
-                "updatedAt",
-                "bio",
-                "pfp",
-                "role",
-                "createdAt",
-                "deletedAt",
-                "email",
-              ],
-            },
-          },
-        ],
-      });
-      return pantry;
-    } else
+
+    if (!membership) {
       throw new Forbidden(
-        "Você não deveria pegar informações das outras pessoas.",
+        "Você nao quer ver isso...",
       );
+    }
+    const pantry = await Pantry.findOne({
+      where: { id },
+      include: [
+        {
+          model: PantryIngredient,
+          as: "allPantryIngredients",
+        },
+        {
+          model: User,
+          as: "userPantry",
+          attributes: {
+            exclude: [
+              "password",
+              "updatedAt",
+              "bio",
+              "pfp",
+              "role",
+              "createdAt",
+              "deletedAt",
+              "email",
+            ],
+          },
+        },
+      ],
+    });
+    return pantry;
+
   }
 
   //Post
