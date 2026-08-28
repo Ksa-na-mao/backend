@@ -15,14 +15,14 @@ Router.post(
 );
 
 Router.patch(
-  " ",
+  "/pantryIngredient/update/:pantryId/:ingredientId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     pantryIngredientController.update(req, res, next),
 );
 
 Router.delete(
-  "/pantryIngredient/delete",
+  "/pantryIngredient/delete/:pantryId/:ingredientId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     pantryIngredientController.delete(req, res, next),
