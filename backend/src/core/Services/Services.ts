@@ -66,8 +66,11 @@ class Services {
   }
 
   // Delete
-  async delete(id: number, userId: number, creatorId: number) {
-    if (userId === Number(creatorId)) {
+  async delete(id: number, userId: number) {
+    const creator = await dataSource[this.model].findOne({
+      where: { id, userId },
+    });
+    if (creator) {
       try {
         await dataSource[this.model].destroy({
           where: { id },

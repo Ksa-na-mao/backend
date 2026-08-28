@@ -29,7 +29,7 @@ Router.patch(
 );
 
 Router.delete(
-  "/ingredients/update",
+  "/ingredients/delete",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     ingredientController.delete(req, res, next),

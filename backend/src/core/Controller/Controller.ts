@@ -52,9 +52,9 @@ class Controller {
   //Delete
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(req.user!.userId);
       const id = Number(req.query.id);
-      const creatorId = Number(req.query.creatorId);
-      await this.service.delete(id, req.user!.userId, creatorId);
+      await this.service.delete(id, req.user!.userId);
       res.status(201).json("Recurso deletado com sucesso!");
     } catch (error) {
       next(error);
