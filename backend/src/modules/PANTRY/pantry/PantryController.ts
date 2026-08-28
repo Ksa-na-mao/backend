@@ -52,7 +52,7 @@ class PantryController extends Controller {
       const pantryId = Number(req.query.pantryId);
       const creatorId = Number(req.query.creatorId);
       const userId = req.user.userId;
-      await pantryServices.delete(pantryId, creatorId, userId);
+      await pantryServices.deletePantry(pantryId, creatorId, userId);
       res.status(200).json("Estoque apagado com sucesso!");
     } catch (error) {
       next(error);
