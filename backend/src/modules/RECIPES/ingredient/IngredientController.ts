@@ -11,8 +11,9 @@ class IngredientController extends Controller {
 
   async post(req: Request, res: Response, next: NextFunction) {
     try {
+      const userId = req.user.userId;
       const data = req.body;
-      const response = await ingredientServices.post(data);
+      const response = await ingredientServices.post(data, userId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

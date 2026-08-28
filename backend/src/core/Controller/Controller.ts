@@ -41,9 +41,8 @@ class Controller {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.query.id);
-      const creatorId = Number(req.query.creatorId);
       const data = req.body;
-      await this.service.update(data, id, req.user!.userId, creatorId);
+      await this.service.update(data, id, req.user!.userId);
       res.status(201).json("Recurso atualizado com sucesso!");
     } catch (error) {
       next(error);
