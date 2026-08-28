@@ -99,7 +99,7 @@ class PantryIngredientServices extends Services {
               update.currentQuantity = ingredient.currentQuantity
                 ? ingredient.currentQuantity
                 : update.currentQuantity;
-              update.currentQuantity = ingredient.minimumQuantity
+              update.minimumQuantity = ingredient.minimumQuantity
                 ? ingredient.minimumQuantity
                 : update.minimumQuantity;
               update.expirationDate = ingredient.expirationDate
