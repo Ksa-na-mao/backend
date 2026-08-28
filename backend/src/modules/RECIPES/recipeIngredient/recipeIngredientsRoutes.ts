@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 
 import verifyAccount from "../../../core/jwt/verifyAccount";
-import RecipeingredientController from "./RecipeingredientController";
+import RecipeingredientController from "./RecipeIngredientController.ts";
 
 const recipeingredientController = new RecipeingredientController();
 
