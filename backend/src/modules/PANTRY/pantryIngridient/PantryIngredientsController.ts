@@ -9,7 +9,8 @@ class PantryIngredientController extends Controller {
   }
   //Post
 
-  async post(req: Request, res: Response, next: NextFunction) {
+  async postIngredient(req: Request, res: Response, next: NextFunction) {
+    console.log("OIIIIIIIIII");
     try {
       const { pantryId } = req.params;
       const pantryIdNumber = Number(pantryId);

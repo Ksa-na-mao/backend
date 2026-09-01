@@ -11,14 +11,7 @@ Router.post(
   "/pantryIngredient/post/pantryId/:pantryId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    pantryIngredientController.post(req, res, next),
-);
-
-Router.patch(
-  "/pantryIngredient/update/:pantryId/:ingredientId",
-  verifyAccount,
-  (req: Request, res: Response, next: NextFunction) =>
-    pantryIngredientController.update(req, res, next),
+    pantryIngredientController.postIngredient(req, res, next),
 );
 
 Router.delete(
