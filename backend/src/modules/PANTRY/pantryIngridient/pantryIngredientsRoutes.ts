@@ -15,7 +15,7 @@ Router.post(
 );
 
 Router.delete(
-  "/pantryIngredient/delete/:pantryId/:ingredientsId",
+  "/pantryIngredient/delete/:pantryId/:ingredientId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     pantryIngredientController.delete(req, res, next),
