@@ -1,12 +1,18 @@
-import Services from "../../../core/Services/Services";
-import dataSource from "../../../database/models";
-import Forbidden from "../../../core/Errors/Forbidden";
-import Error404 from "../../../core/Errors/Error404";
+import Services from "../../../core/Services/Services.ts";
+import dataSource from "../../../database/models/index.ts";
+import Forbidden from "../../../core/Errors/Forbidden.ts";
 import { recipePost, recipeUpdate } from "../../../core/types/recipe/recipe.ts";
+import BadRequest from "../../../core/Errors/BadRequest.ts";
+import { Transaction } from "sequelize";
+import BaseError from "../../../core/Errors/BaseError.ts";
 
 const RecipeIngredient = dataSource.RecipeIngredient;
 
 const recipeModel = dataSource.Recipe;
+const pantryIngredientModel = dataSource.PantryIngredient;
+const ingredientModel = dataSource.Ingredient;
+const shoppingListItemModel = dataSource.ShoppingListItem;
+const notificationModel = dataSource.Notification;
 const sequelize = dataSource.sequelize;
 
 class RecipeServices extends Services {
@@ -49,31 +55,108 @@ class RecipeServices extends Services {
 
   //Post
 
-  async post(data: recipePost) {
+  async post(data: recipePost, userId: number) {
     const result = await sequelize.transaction(async (t) => {
-      const { data: recipeData, userId } = data;
-      const { RecipeIngredients, ...recipeFields } = recipeData;
-      const recipe = await recipeModel.create(
-        {
-          ...recipeFields,
+      const [recipe, created] = await recipeModel.findOrCreate({
+        where: {
+          title: data.title,
           userId,
         },
-        {
-          transaction: t,
+        defaults: {
+          title: data.title,
+          description: data.description,
+          isPublic: data.isPublic,
+          category: data.category,
         },
-      );
-      const ingredients = RecipeIngredients.map((ingredient: any) => ({
-        ...ingredient,
-        recipeId: recipe.id,
-      }));
-      await RecipeIngredient.bulkCreate(ingredients, {
         transaction: t,
       });
-
-      return recipe;
+      if (!created)
+        throw new BadRequest("Você já tem uma receita com esse nome!");
+      for (const ingredient of data.ingredients) {
+        await RecipeIngredient.create(
+          {
+            recipeId: recipe.id,
+            ingredientId: ingredient.id,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit,
+          },
+          { transaction: t },
+        );
+      }
     });
 
     return result;
+  }
+
+  async makeARecipe(id: number, userId: number) {
+    const recipe = await recipeModel.findOne({
+      include: {
+        model: RecipeIngredient,
+        as: "recipeIngredients",
+        include: [
+          {
+            model: ingredientModel,
+            as: "ingredient",
+          },
+        ],
+      },
+      where: { id: id },
+    });
+
+    if (!recipe) throw new BadRequest("Essa receita não existe");
+    const missing = [];
+    const ingredients = recipe.recipeIngredients;
+    await Promise.all(
+      ingredients.map(async (ingredient) => {
+        const userIngredients = await pantryIngredientModel.findOne({
+          where: { id: ingredient.id, userId: userId },
+        });
+        if (!userIngredients) missing.push(ingredient);
+        if (
+          userIngredients &&
+          ingredient.quantity > userIngredients.currentQuantity
+        ) {
+          const needs = ingredient.quantity - userIngredients.currentQuantity;
+          ingredient.quantity = needs;
+          missing.push(ingredient);
+        }
+      }),
+    );
+    if (missing.length === 0) {
+      ingredients.map(async (ingredient) => {
+        const userIngredients = await pantryIngredientModel.findOne({
+          where: { id: ingredient.id, userId: userId },
+        });
+        const diff = userIngredients!.currentQuantity - ingredient.quantity;
+        await pantryIngredientModel.update(
+          {
+            currentQuantity: diff,
+          },
+          {
+            where: {
+              id: ingredient.id,
+              userId,
+            },
+          },
+        );
+        if (diff <= userIngredients!.minimumQuantity) {
+          const [lowOn, created] = await shoppingListItemModel.findOrCreate({
+            where: { ingredientId: ingredient.id, userId: userId },
+          });
+          if (created) {
+            await notificationModel.create({
+              userId: userId,
+              type: `O alimento: ${ingredient!.name} está com ${diff}${ingredient.unit}. Logo, ele foi para o seu carrinho de compras!`,
+            });
+          } else {
+            await notificationModel.create({
+              userId: userId,
+              type: `O alimento: ${ingredient!.name} que já estava no carrinho está cada vez mais escasso! Tente comprar ele para não ficar precisando! :)`,
+            });
+          }
+        }
+      });
+    } else throw new BadRequest("Você não consegue fazer essa receita!");
   }
 
   //Patch
@@ -97,21 +180,15 @@ class RecipeServices extends Services {
   //Delete
   async deleteRecipe(
     recipeId: number,
-    requesterId: number,
-    requesterRole: string,
+    userIdRecipe: number,
+    userId: number,
+    userRole: string,
   ) {
-    const recipe = await recipeModel.findByPk(recipeId);
-
-    if (!recipe) {
-      throw new Error404("receita nao encontra!");
+    if (userIdRecipe === userId || userRole === "admin") {
+      await recipeModel.destroy({ where: { id: recipeId } });
     }
-
-    if (recipe.userId !== requesterId && requesterRole !== "admin") {
-      throw new Forbidden(
-        "você nao pode apagar a receita dos outros... isso é mt errado",
-      );
-    }
-    await recipe.destroy();
+    throw new Forbidden("Não apague as coisas dos outros... é errado!");
   }
 }
+
 export default RecipeServices;
