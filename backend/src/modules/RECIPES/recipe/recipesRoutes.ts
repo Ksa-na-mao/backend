@@ -35,6 +35,12 @@ Router.post(
   (req: Request, res: Response, next: NextFunction) =>
     recipeController.post(req, res, next),
 );
+Router.post(
+  "/recipe/make/recipeId/:recipeId/pantry/:pantryId",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    recipeController.makeARecipe(req, res, next),
+);
 Router.put(
   "/recipe/update/:recipeId",
   verifyAccount,

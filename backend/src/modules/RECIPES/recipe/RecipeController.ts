@@ -54,8 +54,22 @@ class RecipeController extends Controller {
     try {
       const userId = req.user.userId;
       const data = req.body;
-      const allData = { data, userId };
-      const response = await recipeServices.post(allData);
+      const response = await recipeServices.post(data, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async makeARecipe(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user.userId;
+      const { recipeId, pantryId } = req.params;
+      const response = await recipeServices.makeARecipe(
+        Number(recipeId),
+        userId,
+        Number(pantryId),
+      );
       res.status(200).json(response);
     } catch (error) {
       next(error);

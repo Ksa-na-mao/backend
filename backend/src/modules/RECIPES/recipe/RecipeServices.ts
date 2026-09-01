@@ -3,8 +3,7 @@ import dataSource from "../../../database/models/index.ts";
 import Forbidden from "../../../core/Errors/Forbidden.ts";
 import { recipePost, recipeUpdate } from "../../../core/types/recipe/recipe.ts";
 import BadRequest from "../../../core/Errors/BadRequest.ts";
-import { Transaction } from "sequelize";
-import BaseError from "../../../core/Errors/BaseError.ts";
+import { RecipeIngredientPost } from "../../../core/types/recipeIngredient/recipeIngredient.ts";
 
 const RecipeIngredient = dataSource.RecipeIngredient;
 
@@ -72,7 +71,7 @@ class RecipeServices extends Services {
       });
       if (!created)
         throw new BadRequest("Você já tem uma receita com esse nome!");
-      for (const ingredient of data.ingredients) {
+      for (const ingredient of data.RecipeIngredients) {
         await RecipeIngredient.create(
           {
             recipeId: recipe.id,
@@ -88,7 +87,7 @@ class RecipeServices extends Services {
     return result;
   }
 
-  async makeARecipe(id: number, userId: number) {
+  async makeARecipe(id: number, userId: number, pantryId: number) {
     const recipe = await recipeModel.findOne({
       include: {
         model: RecipeIngredient,
@@ -107,9 +106,12 @@ class RecipeServices extends Services {
     const missing = [];
     const ingredients = recipe.recipeIngredients;
     await Promise.all(
-      ingredients.map(async (ingredient) => {
+      ingredients.map(async (ingredient: RecipeIngredientPost) => {
         const userIngredients = await pantryIngredientModel.findOne({
-          where: { id: ingredient.id, userId: userId },
+          where: {
+            id: ingredient.id,
+            pantryId: pantryId,
+          },
         });
         if (!userIngredients) missing.push(ingredient);
         if (
@@ -123,9 +125,9 @@ class RecipeServices extends Services {
       }),
     );
     if (missing.length === 0) {
-      ingredients.map(async (ingredient) => {
+      ingredients.map(async (ingredient: any) => {
         const userIngredients = await pantryIngredientModel.findOne({
-          where: { id: ingredient.id, userId: userId },
+          where: { id: ingredient.id, pantryId: pantryId },
         });
         const diff = userIngredients!.currentQuantity - ingredient.quantity;
         await pantryIngredientModel.update(
@@ -135,27 +137,28 @@ class RecipeServices extends Services {
           {
             where: {
               id: ingredient.id,
-              userId,
+              pantryId: pantryId,
             },
           },
         );
         if (diff <= userIngredients!.minimumQuantity) {
           const [lowOn, created] = await shoppingListItemModel.findOrCreate({
-            where: { ingredientId: ingredient.id, userId: userId },
+            where: { ingredientId: ingredient.id, shoppingListId: pantryId },
           });
           if (created) {
             await notificationModel.create({
               userId: userId,
-              type: `O alimento: ${ingredient!.name} está com ${diff}${ingredient.unit}. Logo, ele foi para o seu carrinho de compras!`,
+              type: `O alimento: ${ingredient.ingredient.name} está com ${diff}${ingredient.unit}. Logo, ele foi para o seu carrinho de compras!`,
             });
           } else {
             await notificationModel.create({
               userId: userId,
-              type: `O alimento: ${ingredient!.name} que já estava no carrinho está cada vez mais escasso! Tente comprar ele para não ficar precisando! :)`,
+              type: `O alimento: ${ingredient.ingredient.name} que já estava no carrinho está cada vez mais escasso! Tente comprar ele para não ficar precisando! :)`,
             });
           }
         }
       });
+      return { message: "Receita feita com sucesso! Bom apetite!" };
     } else throw new BadRequest("Você não consegue fazer essa receita!");
   }
 
@@ -178,13 +181,11 @@ class RecipeServices extends Services {
   }
 
   //Delete
-  async deleteRecipe(
-    recipeId: number,
-    userIdRecipe: number,
-    userId: number,
-    userRole: string,
-  ) {
-    if (userIdRecipe === userId || userRole === "admin") {
+  async deleteRecipe(recipeId: number, userAuthId: number, userRole: string) {
+    const { userId } = (await recipeModel.findOne({
+      where: { id: recipeId },
+    })) as any;
+    if (userId === userAuthId || userRole === "admin") {
       await recipeModel.destroy({ where: { id: recipeId } });
     }
     throw new Forbidden("Não apague as coisas dos outros... é errado!");
