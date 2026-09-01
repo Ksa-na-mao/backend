@@ -34,7 +34,7 @@ class PantryIngredientServices extends Services {
             const [pantryIngredient, created] =
               await PantryIngredient.findOrCreate({
                 where: {
-                  ingredientId: ingredient.id,
+                  ingredientId: ingredient.ingredientId,
                   pantryId: pantryId,
                 },
                 defaults: {

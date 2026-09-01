@@ -16,7 +16,7 @@ class ShoppingListItem extends Model {
     });
     ShoppingListItem.belongsTo(models.ShoppingList, {
       foreignKey: "shoppingListId",
-      as: "shoppingListId",
+      as: "shoppingList",
       onDelete: "CASCADE",
       hooks: true,
     });
