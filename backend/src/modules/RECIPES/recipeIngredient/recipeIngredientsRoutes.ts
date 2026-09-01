@@ -22,7 +22,7 @@ Router.patch(
 );
 
 Router.delete(
-  "/recipeingredients/delete",
+  "/recipeingredients/delete/ingredient/:id/recipe/:recipeId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeingredientController.delete(req, res, next),

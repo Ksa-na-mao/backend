@@ -1,8 +1,12 @@
 import Services from "../../../core/Services/Services.js";
 import dataSource from "../../../database/models/index.js";
-const model = dataSource["RecipeIngredient"];
 import { RecipeIngredientPost } from "../../../core/types/recipeIngredient/recipeIngredient.ts";
 import BadRequest from "../../../core/Errors/BadRequest.ts";
+import Forbidden from "../../../core/Errors/Error404.ts";
+
+const model = dataSource["RecipeIngredient"];
+const recipeModel = dataSource["Recipe"];
+const user = dataSource["User"];
 
 class RecipeIngredientServices extends Services {
   constructor() {
@@ -59,6 +63,36 @@ class RecipeIngredientServices extends Services {
       where: { id },
     });
     return { message: "atualizado com sucesso", rowsUpdated };
+  }
+
+  //Delete
+  async deleteRecipeIngredient(id: number, recipeId: number, userId: number) {
+    const isAllowed = await recipeModel.findOne({
+      where: {
+        id: recipeId,
+        userId,
+      },
+    });
+    if (isAllowed) {
+      const recipeIngredient = await model.findAndCountAll({
+        where: { recipeId },
+      });
+      if (!recipeIngredient) {
+        throw new BadRequest("Ingrediente da receita não encontrado!");
+      }
+      if (recipeIngredient.count > 1) {
+        const deleted = await model.destroy({ where: { id, recipeId } });
+        if (deleted) return { message: "excluído com sucesso" };
+        else throw new BadRequest("Não foi possível excluir o ingrediente!");
+      } else {
+        throw new BadRequest(
+          "Não é possível excluir o último ingrediente da receita!",
+        );
+      }
+    } else
+      throw new Forbidden(
+        "Você não tem permissão para excluir esse ingrediente!",
+      );
   }
 }
 

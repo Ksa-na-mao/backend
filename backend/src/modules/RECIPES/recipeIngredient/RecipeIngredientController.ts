@@ -33,6 +33,23 @@ class RecipeIngredientController extends Controller {
       next(error);
     }
   }
+
+  //Delete
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.id);
+      const recipeId = Number(req.params.recipeId);
+      const userId = req.user.userId;
+      const response = await recipeIngredientServices.deleteRecipeIngredient(
+        id,
+        recipeId,
+        userId,
+      );
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default RecipeIngredientController;
