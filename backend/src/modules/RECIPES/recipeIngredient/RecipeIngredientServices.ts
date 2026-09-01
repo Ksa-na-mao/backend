@@ -8,15 +8,9 @@ class RecipeingredientServices extends Services {
     super("RecipeIngredient");
   }
 
-  async post(data: any) {
-    const response = await model.create({
-      recipeId: data.recipeId,
-      ingredientId: data.ingredientId,
-      quantity: data.quantity,
-      unit: data.unit,
-    });
-
-    return response;
+  //Get
+  async getAll(id: number) {
+    return await model.findAll({ where: { recipeId: id } });
   }
 }
 

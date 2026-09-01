@@ -8,17 +8,10 @@ const recipeingredientController = new RecipeingredientController();
 const Router = express.Router();
 
 Router.get(
-  "/recipeingredients",
+  "/recipeingredients/:id",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeingredientController.getAll(req, res, next),
-);
-
-Router.post(
-  "/recipeingredients/post",
-  verifyAccount,
-  (req: Request, res: Response, next: NextFunction) =>
-    recipeingredientController.post(req, res, next),
 );
 
 Router.patch(

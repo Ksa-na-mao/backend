@@ -8,11 +8,11 @@ class RecipeingredientController extends Controller {
     super(recipeingredientServices);
   }
 
-  //Post
-  async post(req: Request, res: Response, next: NextFunction) {
+  //Get
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = req.body;
-      const response = await recipeingredientServices.post(data);
+      const id = Number(req.params.id);
+      const response = await recipeingredientServices.getAll(id);
       res.status(200).json(response);
     } catch (error) {
       next(error);

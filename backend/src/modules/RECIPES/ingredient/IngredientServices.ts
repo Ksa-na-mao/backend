@@ -28,13 +28,13 @@ class IngredientServices extends Services {
     if (!data.name.trim()) {
       throw new BadRequest("Você precisa mudar algo para atualizar!");
     }
+    console.log(id, userId);
     const isAllowed = await model.findOne({ where: { id, userId } });
     if (!isAllowed)
       throw new Forbidden(
         "Você não tem permissão para atualizar esse ingrediente!",
       );
     if (data.name.trim() !== isAllowed.dataValues.name.trim()) {
-      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
       const response = await model.update(data, { where: { id, userId } });
       if (response[0] === 0) console.log(response);
       return response;

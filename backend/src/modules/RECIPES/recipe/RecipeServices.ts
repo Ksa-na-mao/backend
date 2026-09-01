@@ -75,7 +75,7 @@ class RecipeServices extends Services {
         await RecipeIngredient.create(
           {
             recipeId: recipe.id,
-            ingredientId: ingredient.id,
+            ingredientId: ingredient.ingredientId,
             quantity: ingredient.quantity,
             unit: ingredient.unit,
           },
