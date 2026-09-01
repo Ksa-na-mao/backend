@@ -23,7 +23,6 @@ class UserController extends Controller {
 
   async getOneUser(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("OIIIIIIIII");
       const id = Number(req.params.id);
       const users = await userServices.getUserById(id);
       res.status(200).json(users);

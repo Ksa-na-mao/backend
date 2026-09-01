@@ -22,7 +22,7 @@ class PantryController extends Controller {
 
   async getOnePantry(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = Number(req.query.id);
+      const id = Number(req.params.id);
       const userId = req.user!.userId;
       if (id && userId) {
         const response = await pantryServices.getPantryInfos(id, userId);
@@ -39,7 +39,25 @@ class PantryController extends Controller {
   async post(req: Request, res: Response, next: NextFunction) {
     try {
       const data = req.body;
+      const userId = req.user!.userId;
+      data.userId = userId;
       const response = await pantryServices.createPantryAndShoppingList(data);
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  //Patch
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      const id = Number(req.params.id);
+      const response = await pantryServices.updatePantry(
+        data,
+        id,
+        req.user!.userId,
+      );
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -49,11 +67,11 @@ class PantryController extends Controller {
   //Delete
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const pantryId = Number(req.query.pantryId);
-      const creatorId = Number(req.query.creatorId);
-      const userId = req.user.userId;
-      await pantryServices.deletePantry(pantryId, creatorId, userId);
-      res.status(200).json("Estoque apagado com sucesso!");
+      const pantryId = Number(req.params.id);
+      const userId = req.user!.userId;
+      const deleted = await pantryServices.deletePantry(pantryId, userId);
+      if (deleted) res.status(200).json("Estoque apagado com sucesso!");
+      else throw new BaseError("Não foi possível apagar o estoque.");
     } catch (error) {
       next(error);
     }

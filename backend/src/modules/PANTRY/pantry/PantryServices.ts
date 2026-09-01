@@ -37,6 +37,7 @@ class PantryServices extends Services {
     if (!membership) {
       throw new Forbidden("Você nao quer ver isso...");
     }
+
     const pantry = await Pantry.findOne({
       where: { id },
       include: [
@@ -46,7 +47,7 @@ class PantryServices extends Services {
         },
         {
           model: User,
-          as: "userPantry",
+          as: "users",
           attributes: {
             exclude: [
               "password",
@@ -72,7 +73,6 @@ class PantryServices extends Services {
   //Post
 
   async createPantryAndShoppingList(data: dataPost, t?: Transaction) {
-    console.log(data.userId);
     if (!data.userId) {
       throw new BadRequest("O estoque precisa de um dono");
     }
@@ -123,14 +123,12 @@ class PantryServices extends Services {
     return sequelize.transaction(execute);
   }
   //Update
-  async updatePantry(
-    data: dataUpdate,
-    id: number,
-    userId: number,
-    creatorId: number,
-  ) {
+  async updatePantry(data: dataUpdate, id: number, userId: number) {
     if (data) {
-      if (userId === Number(creatorId)) {
+      const creatorId = await Pantry.findOne({
+        where: { id: id, userId: userId },
+      });
+      if (userId === Number(creatorId?.dataValues.userId)) {
         const allNames = await Pantry.findOne({
           where: { userId: userId, name: data.name },
         });
@@ -149,37 +147,19 @@ class PantryServices extends Services {
 
   //Delete
 
-  async deletePantry(pantryId: number, creatorId: number, userId: number) {
-    const response = await PantryUsers.findAll({
-      where: { pantryId: pantryId },
+  async deletePantry(id: number, userId: number) {
+    const creatorId = await Pantry.findOne({
+      where: { id: id, userId: userId },
     });
-    const canDestroy = await Promise.all(
-      response.map(async (pantryUser) => {
-        return await Pantry.count({
-          where: { userId: pantryUser.userId },
-        });
-      }),
-    );
-    if (!canDestroy.includes(1)) {
-      if (Number(creatorId) === userId) {
-        await sequelize.transaction(async (t) => {
-          PantryIngredient.destroy({
-            where: { pantryId: pantryId },
-            transaction: t,
-          });
+    if (creatorId) {
+      const apagado = await Pantry.destroy({
+        where: { id },
+      });
 
-          Pantry.destroy({
-            where: { id: pantryId },
-            transaction: t,
-          });
-        });
-        return true;
-      }
-      throw new Forbidden("Você só pode apagar os seus estoques...");
+      console.log(apagado);
+      return apagado;
     }
-    throw new BadRequest(
-      "Alguém(ou você) só tem um estoque registrado na plataforma... assim sendo impossível excluir esse!",
-    );
+    throw new Forbidden("Você só pode deletar os seus próprios estoques!");
   }
 }
 
