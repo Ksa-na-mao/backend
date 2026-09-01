@@ -27,38 +27,40 @@ class PantryIngredientServices extends Services {
   //Post
 
   async post(pantryId: number, ingredients: any[], reqUserId: number) {
-    if (ingredients && (await this.getPantryUsersId(pantryId, reqUserId))) {
-      return await sequelize.transaction(async (t) => {
-        return await Promise.all(
-          ingredients.map(async (ingredient) => {
-            const [pantryIngredient, created] =
-              await PantryIngredient.findOrCreate({
-                where: {
-                  ingredientId: ingredient.ingredientId,
-                  pantryId: pantryId,
-                },
-                defaults: {
-                  currentQuantity: ingredient.currentQuantity,
-                  minimumQuantity: ingredient.minimumQuantity,
-                },
-                transaction: t,
-              });
-            if (!created) {
-              pantryIngredient.currentQuantity += ingredient.currentQuantity;
-              const minimum = ingredient.minimumQuantity
-                ? ingredient.minimumQuantity
-                : pantryIngredient.minimumQuantity;
-              pantryIngredient.minimumQuantity = minimum;
+    if (ingredients) {
+      if (await this.getPantryUsersId(pantryId, reqUserId)) {
+        return await sequelize.transaction(async (t) => {
+          return await Promise.all(
+            ingredients.map(async (ingredient) => {
+              const [pantryIngredient, created] =
+                await PantryIngredient.findOrCreate({
+                  where: {
+                    ingredientId: ingredient.ingredientId,
+                    pantryId: pantryId,
+                  },
+                  defaults: {
+                    currentQuantity: ingredient.currentQuantity,
+                    minimumQuantity: ingredient.minimumQuantity,
+                  },
+                  transaction: t,
+                });
+              if (!created) {
+                pantryIngredient.currentQuantity += ingredient.currentQuantity;
+                const minimum = ingredient.minimumQuantity
+                  ? ingredient.minimumQuantity
+                  : pantryIngredient.minimumQuantity;
+                pantryIngredient.minimumQuantity = minimum;
 
-              await pantryIngredient.save({
-                transaction: t,
-              });
-            }
+                await pantryIngredient.save({
+                  transaction: t,
+                });
+              }
 
-            return pantryIngredient;
-          }),
-        );
-      });
+              return pantryIngredient;
+            }),
+          );
+        });
+      } else throw new Forbidden();
     } else throw new BadRequest("Selecione um ingrediente.");
   }
 
