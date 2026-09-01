@@ -1,0 +1,24 @@
+import express, { Request, Response, NextFunction } from "express";
+
+import verifyAccount from "../../../core/jwt/verifyAccount";
+import PantryIngredientController from "./PantryIngredientsController";
+
+const pantryIngredientController = new PantryIngredientController();
+
+const Router = express.Router();
+
+Router.post(
+  "/pantryIngredient/post/pantryId/:pantryId",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    pantryIngredientController.postIngredient(req, res, next),
+);
+
+Router.delete(
+  "/pantryIngredient/delete/:pantryId/:ingredientsId",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    pantryIngredientController.delete(req, res, next),
+);
+
+export default Router;

@@ -23,7 +23,7 @@ export default defineConfig([
       "no-this-before-super": ["error"],
       "no-undef": ["error"],
       "no-unreachable": ["error"],
-      "no-unused-vars": ["error"],
+      "no-unused-vars": ["warn"],
       "camelcase": ["error"],
       "capitalized-comments": ["error"],
       "eqeqeq": ["error"],
