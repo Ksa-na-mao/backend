@@ -22,14 +22,14 @@ Router.post(
 );
 
 Router.patch(
-  "/ingredients/update",
+  "/ingredients/update/:id",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    ingredientController.update(req, res, next),
+    ingredientController.updateIngredient(req, res, next),
 );
 
 Router.delete(
-  "/ingredients/delete",
+  "/ingredients/delete/:id",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     ingredientController.delete(req, res, next),
