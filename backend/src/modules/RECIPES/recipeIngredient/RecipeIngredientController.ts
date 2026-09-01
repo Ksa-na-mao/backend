@@ -1,18 +1,33 @@
 import { Request, Response, NextFunction } from "express";
 import Controller from "../../../core/Controller/Controller.ts";
-import RecipeingredientServices from "./RecipeIngredientServices.ts";
-const recipeingredientServices = new RecipeingredientServices();
+import RecipeIngredientServices from "./RecipeIngredientServices.ts";
+const recipeIngredientServices = new RecipeIngredientServices();
 
-class RecipeingredientController extends Controller {
+class RecipeIngredientController extends Controller {
   constructor() {
-    super(recipeingredientServices);
+    super(recipeIngredientServices);
   }
 
   //Get
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params.id);
-      const response = await recipeingredientServices.getAll(id);
+      const response = await recipeIngredientServices.getAll(id);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  //update
+  async updateIngredient(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.id);
+      const data = req.body;
+      const response = await recipeIngredientServices.updateRecipeIngredient(
+        data,
+        id,
+      );
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -20,4 +35,4 @@ class RecipeingredientController extends Controller {
   }
 }
 
-export default RecipeingredientController;
+export default RecipeIngredientController;

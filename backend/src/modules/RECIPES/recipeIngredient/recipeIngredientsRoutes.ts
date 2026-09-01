@@ -15,14 +15,14 @@ Router.get(
 );
 
 Router.patch(
-  "/recipeingredients/update",
+  "/recipeingredients/update/:id",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    recipeingredientController.update(req, res, next),
+    recipeingredientController.updateIngredient(req, res, next),
 );
 
 Router.delete(
-  "/recipeingredients/update",
+  "/recipeingredients/delete",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeingredientController.delete(req, res, next),
