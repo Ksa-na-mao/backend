@@ -127,9 +127,10 @@ class PantryIngredientServices extends Services {
     userId: number,
   ) {
     if (await this.getPantryUsersId(pantryId, userId)) {
-      await PantryIngredient.destroy({
+      const deleted = await PantryIngredient.destroy({
         where: { ingredientId: ingredientId, pantryId },
       });
+      return deleted;
     } else {
       throw new Forbidden();
     }

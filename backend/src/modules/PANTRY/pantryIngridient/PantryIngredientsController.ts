@@ -50,12 +50,13 @@ class PantryIngredientController extends Controller {
       const ingredientId = Number(req.params.ingredientId);
       const pantryId = Number(req.params.pantryId);
       const userId = req.user.userId;
-      await pantryIngredientServices.deleteIngredient(
+      const deleted = await pantryIngredientServices.deleteIngredient(
         ingredientId,
         pantryId,
         userId,
       );
-      res.status(200).json("Estoque apagado com sucesso!");
+      if (deleted) res.status(200).json("item apagado com sucesso!");
+      else res.status(404).json("item não encontrado.");
     } catch (error) {
       next(error);
     }
