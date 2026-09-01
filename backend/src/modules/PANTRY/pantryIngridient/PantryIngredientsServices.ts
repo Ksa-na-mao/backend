@@ -83,7 +83,6 @@ class PantryIngredientServices extends Services {
                 },
                 transaction: t,
               });
-
               if (!update) {
                 return await PantryIngredient.create(
                   {
@@ -99,10 +98,10 @@ class PantryIngredientServices extends Services {
               }
 
               update.currentQuantity = ingredient.currentQuantity
-                ? ingredient.currentQuantity
+                ? (ingredient.currentQuantity += update.currentQuantity)
                 : update.currentQuantity;
               update.minimumQuantity = ingredient.minimumQuantity
-                ? ingredient.minimumQuantity
+                ? (ingredient.minimumQuantity += update.minimumQuantity)
                 : update.minimumQuantity;
               update.expirationDate = ingredient.expirationDate
                 ? ingredient.expirationDate
