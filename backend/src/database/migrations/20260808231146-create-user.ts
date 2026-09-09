@@ -31,7 +31,9 @@ export default {
       },
 
       role: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM("user", "admin"),
+        allowNull: false,
+        defaultValue: "user",
       },
 
       createdAt: {

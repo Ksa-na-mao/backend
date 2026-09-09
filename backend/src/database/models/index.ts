@@ -26,7 +26,7 @@ const sequelize = new Sequelize({
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  database: database,
+  database,
 });
 
 const CommentModel = Comment(sequelize);
@@ -61,15 +61,15 @@ const db = {
   User: UserModel,
 };
 
-Object.values(db).forEach((model: any) => {
-  if (model.associate) {
+export type ModelName = keyof typeof db;
+
+export type DatabaseModels = typeof db;
+
+Object.values(db).forEach((model) => {
+  if ("associate" in model && typeof model.associate === "function") {
     model.associate(db);
   }
 });
-
-export type ModelName = keyof typeof db;
-
-export type DatabaseModels = Omit<typeof db, "sequelize" | "Sequelize">;
 
 export default {
   ...db,

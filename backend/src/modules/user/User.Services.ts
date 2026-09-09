@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import BadRequest from "@Errors/BadRequest.js";
 import Forbidden from "@Errors/Forbidden.js";
 import Error404 from "@Errors/Error404.js";
+import Unauthorized from "@/core/Errors/Unauthorized.ts";
 
 import PantryServices from "../PANTRY/pantry/Pantry.Services.js";
 
@@ -89,7 +90,7 @@ class UserServices extends Services {
     const user = await userModel.findOne({ where: { email: userData.email } });
     if (!user) throw new Error404("Usuário não encontrado!");
     const match = await bcrypt.compare(userData.password, user.password);
-    if (!match) throw new BadRequest("Senha incorreta!");
+    if (!match) throw new Unauthorized("Senha incorreta!");
 
     const token = auth(user);
     return token;

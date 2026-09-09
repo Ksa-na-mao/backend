@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import goodPassword from "../../modules/user/helper/goodPassword.ts";
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from "./index.ts";
 
 class User extends Model {
   declare id: number;
@@ -11,7 +12,7 @@ class User extends Model {
   declare pfp: string;
   declare role: string;
 
-  static associate(models: any) {
+  static associate(models: DatabaseModels) {
     User.hasMany(models.Notification, {
       foreignKey: "userId",
       as: "userNotifications",
@@ -66,16 +67,26 @@ class User extends Model {
 export default (sequelize: Sequelize) => {
   User.init(
     {
-      name: {
+      username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           len: {
             args: [3, 100],
             msg: "O nome deve ter entre 3 e 100 caracteres",
           },
           notEmpty: true,
+          noSpaces(value: string) {
+            if (/\s/.test(value)) {
+              throw new Error("O nome de usuário não pode conter espaços");
+            }
+          },
         },
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       email: {
         unique: true,
