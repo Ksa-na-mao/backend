@@ -7,10 +7,9 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger/swagger.js";
 
 const app = express();
-
 mainRoutes(app);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(Error404Middleware);
 app.use(ErrorHandler);
 
-module.exports = app;
+export default app;
