@@ -5,9 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec tsx server.ts",
     "start": "tsx server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development nodemon --exec tsx server.ts",
+    "test": "cross-env NODE_ENV=test vitest"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -25,6 +25,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "cross-env": "^10.1.0",
     "eslint": "^10.10.0",
     "globals": "^17.11.0",
     "tsx": "^4.23.12",
