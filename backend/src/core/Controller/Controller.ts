@@ -1,5 +1,4 @@
-import BadRequest from "../Errors/BadRequest.js";
-import Services from "../Services/Services.js";
+import Services from "@Services/Services.ts";
 import { Request, Response, NextFunction } from "express";
 
 class Controller {

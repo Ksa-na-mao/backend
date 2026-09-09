@@ -1,8 +1,8 @@
 import express from "express";
 import { Request, Response, NextFunction } from "express";
-import UserController from "../../modules/user/UserController.js";
-import verifyAccount from "../../core/jwt/verifyAccount.js";
-import verifyAdmin from "../../core/jwt/verifyAdmin.js";
+import UserController from "./User.Controller.js";
+import verifyAccount from "@verifyAccount";
+import verifyAdmin from "@verifyAdmin";
 
 const userController = new UserController();
 

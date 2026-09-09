@@ -1,10 +1,10 @@
-import Services from "../../../core/Services/Services";
-import dataSource from "../../../database/models";
-import BadRequest from "../../../core/Errors/BadRequest";
-import Forbidden from "../../../core/Errors/Forbidden";
-import BaseError from "../../../core/Errors/BaseError";
+import Services from "@Services";
+import dataSource from "@models/index.ts";
+import BadRequest from "@Errors/BadRequest.ts";
+import Forbidden from "@Errors/Forbidden.ts";
+import BaseError from "@Errors/BaseError.ts";
 
-import { dataUpdate, dataPost } from "../../../core/types/pantry/pantry.ts";
+import { dataUpdate, dataPost } from "@Types/pantry/pantry.ts";
 import { Transaction } from "sequelize";
 
 const sequelize = dataSource.sequelize;

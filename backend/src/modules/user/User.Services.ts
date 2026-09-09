@@ -1,14 +1,15 @@
-import Services from "../../core/Services/Services.js";
-import dataSource from "../../database/models/index.js";
+import Services from "@Services";
+
 import auth from "../../core/jwt/jwt.ts";
 import bcrypt from "bcrypt";
 
-import BadRequest from "../../core/Errors/BadRequest.js";
-import Forbidden from "../../core/Errors/Forbidden.js";
-import Error404 from "../../core/Errors/Error404.js";
+import BadRequest from "@Errors/BadRequest.js";
+import Forbidden from "@Errors/Forbidden.js";
+import Error404 from "@Errors/Error404.js";
 
-import PantryServices from "../PANTRY/pantry/PantryServices.js";
+import PantryServices from "../PANTRY/pantry/Pantry.Services.js";
 
+import dataSource from "../../database/models/index.js";
 const userModel = dataSource.User;
 const pantryModel = dataSource.Pantry;
 

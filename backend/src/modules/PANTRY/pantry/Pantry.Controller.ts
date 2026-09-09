@@ -1,6 +1,6 @@
-import Controller from "../../../core/Controller/Controller.ts";
-import BaseError from "../../../core/Errors/BaseError.ts";
-import PantryServices from "./PantryServices.ts";
+import Controller from "@Controller";
+import BaseError from "@Errors/BaseError.ts";
+import PantryServices from "./Pantry.Services.ts";
 import { Request, Response, NextFunction } from "express";
 const pantryServices = new PantryServices();
 

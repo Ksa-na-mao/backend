@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import Controller from "../../../core/Controller/Controller";
-import IngredientServices from "./IngredientServices";
-import BaseError from "../../../core/Errors/BaseError";
+import Controller from "@Controller";
+import IngredientServices from "./Ingredient.Services";
+import BaseError from "@Errors/BaseError";
 
 const ingredientServices = new IngredientServices();
 

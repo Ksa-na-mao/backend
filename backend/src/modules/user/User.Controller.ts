@@ -1,5 +1,5 @@
-import Controller from "../../core/Controller/Controller";
-import UserServices from "./UserServices";
+import Controller from "@Controller";
+import UserServices from "./User.Services";
 import { Request, Response, NextFunction } from "express";
 
 const userServices = new UserServices();

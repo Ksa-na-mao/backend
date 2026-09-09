@@ -1,12 +1,11 @@
-import Services from "../../../core/Services/Services.js";
-import dataSource from "../../../database/models/index.js";
-import { RecipeIngredientPost } from "../../../core/types/recipeIngredient/recipeIngredient.ts";
-import BadRequest from "../../../core/Errors/BadRequest.ts";
-import Forbidden from "../../../core/Errors/Error404.ts";
+import Services from "@Services";
+import dataSource from "@models/index.js";
+import { RecipeIngredientPost } from "@Types/recipeIngredient/recipeIngredient.ts";
+import BadRequest from "@Errors/BadRequest.ts";
+import Forbidden from "@Errors/Error404.ts";
 
 const model = dataSource["RecipeIngredient"];
 const recipeModel = dataSource["Recipe"];
-const user = dataSource["User"];
 
 class RecipeIngredientServices extends Services {
   constructor() {

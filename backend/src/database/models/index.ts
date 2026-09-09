@@ -16,8 +16,12 @@ import Notification from "./Notification";
 import Like from "./Like";
 
 const sequelize = new Sequelize({
-  dialect: "sqlite",
-  storage: "./src/database/database.sqlite",
+  dialect: "postgres",
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
 });
 
 const CommentModel = Comment(sequelize);

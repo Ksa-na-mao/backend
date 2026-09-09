@@ -1,4 +1,6 @@
 node_modules
 .env
-*.sqlite
-*.sqlite3
+src/database/config/config.json
+
+
+/src/database/database.sqlite

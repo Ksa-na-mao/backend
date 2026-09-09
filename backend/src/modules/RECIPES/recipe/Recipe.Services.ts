@@ -1,9 +1,9 @@
-import Services from "../../../core/Services/Services.ts";
-import dataSource from "../../../database/models/index.ts";
-import Forbidden from "../../../core/Errors/Forbidden.ts";
-import { recipePost, recipeUpdate } from "../../../core/types/recipe/recipe.ts";
-import BadRequest from "../../../core/Errors/BadRequest.ts";
-import { RecipeIngredientPost } from "../../../core/types/recipeIngredient/recipeIngredient.ts";
+import Services from "@Services";
+import dataSource from "@models/index.ts";
+import Forbidden from "@Errors/Forbidden.ts";
+import { recipePost, recipeUpdate } from "@Types/recipe/recipe.ts";
+import BadRequest from "@Errors/BadRequest.ts";
+import { RecipeIngredientPost } from "@Types/recipeIngredient/recipeIngredient.ts";
 
 const RecipeIngredient = dataSource.RecipeIngredient;
 

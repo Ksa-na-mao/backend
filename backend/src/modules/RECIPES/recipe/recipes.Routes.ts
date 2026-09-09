@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import verifyAccount from "../../../core/jwt/verifyAccount.js";
-import RecipeController from "./RecipeController.js";
+import RecipeController from "./Recipe.Controller.js";
 const recipeController = new RecipeController();
 
 const Router = express.Router();

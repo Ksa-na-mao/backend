@@ -1,8 +1,8 @@
-import Services from "../../../core/Services/Services";
-import dataSource from "../../../database/models";
-import BadRequest from "../../../core/Errors/BadRequest";
-import { ingredient } from "../../../core/types/ingredient/ingredient.ts";
-import Forbidden from "../../../core/Errors/Error404.ts";
+import Services from "@Services";
+import dataSource from "@models/index.ts";
+import BadRequest from "@Errors/BadRequest";
+import { ingredient } from "@Types/ingredient/ingredient.ts";
+import Forbidden from "@Errors/Error404.ts";
 
 const model = dataSource.Ingredient;
 

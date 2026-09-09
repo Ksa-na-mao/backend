@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import Controller from "../../../core/Controller/Controller.js";
-import RecipeServices from "./RecipeServices.js";
+import Controller from "@Controller";
+import RecipeServices from "./Recipe.Services.js";
 
 const recipeServices = new RecipeServices();
 

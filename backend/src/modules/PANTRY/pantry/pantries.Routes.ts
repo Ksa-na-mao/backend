@@ -1,7 +1,7 @@
 import express from "express";
 
-import verifyAccount from "../../../core/jwt/verifyAccount";
-import PantryController from "./PantryController";
+import verifyAccount from "@verifyAccount";
+import PantryController from "./Pantry.Controller";
 const pantryController = new PantryController();
 
 const Router = express.Router();

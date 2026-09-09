@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import Controller from "../../../core/Controller/Controller.ts";
-import RecipeIngredientServices from "./RecipeIngredientServices.ts";
+import Controller from "@Controller";
+import RecipeIngredientServices from "./RecipeIngredient.Services.ts";
 const recipeIngredientServices = new RecipeIngredientServices();
 
 class RecipeIngredientController extends Controller {

@@ -1,8 +1,8 @@
-import Services from "../../../core/Services/Services";
-import dataSource from "../../../database/models";
-import BadRequest from "../../../core/Errors/BadRequest";
-import Forbidden from "../../../core/Errors/Forbidden";
-import { pantryIngredients } from "../../../core/types/pantryIngredients/pantryIngredients.ts";
+import Services from "@Services";
+import dataSource from "@models/index.ts";
+import BadRequest from "@Errors/BadRequest";
+import Forbidden from "@Errors/Forbidden";
+import { pantryIngredients } from "@Types/pantryIngredients/pantryIngredients.ts";
 
 const sequelize = dataSource.sequelize;
 
