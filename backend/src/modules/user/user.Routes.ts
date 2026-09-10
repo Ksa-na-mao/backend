@@ -21,13 +21,13 @@ const Router = express.Router();
  *       - Users
  *     parameters:
  *       - in: query
- *         name: page
+ *         name: offset
  *         required: false
  *         description: Número da página
  *         schema:
  *           type: integer
- *           minimum: 1
- *           default: 1
+ *           minimum: 0
+ *           default: 0
  *           example: 1
  *       - in: query
  *         name: limit
@@ -38,6 +38,20 @@ const Router = express.Router();
  *           minimum: 1
  *           default: 10
  *           example: 10
+ *       - in: query
+ *         name: name
+ *         required: false
+ *         description: Parte do nome do usuário que vai ser buscado
+ *         schema:
+ *           type: string
+ *           example: joao
+ *       - in: query
+ *         name: username
+ *         required: false
+ *         description: Parte do usernome do usuário que vai ser buscado
+ *         schema:
+ *           type: string
+ *           example: joaolegal
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -49,7 +63,7 @@ Router.get(
   "/users",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    userController.getAllUsers(req, res, next),
+    userController.getUsersBy(req, res, next),
 );
 
 /**

@@ -1,6 +1,7 @@
 import Controller from "@Controller";
 import UserServices from "./User.Services";
 import { Request, Response, NextFunction } from "express";
+import BadRequest from "@/core/Errors/BadRequest";
 
 const userServices = new UserServices();
 
@@ -9,11 +10,21 @@ class UserController extends Controller {
     super(userServices);
   }
 
-  async getAllUsers(req: Request, res: Response, next: NextFunction) {
+  //Get
+
+  async getUsersBy(req: Request, res: Response, next: NextFunction) {
     try {
-      const where = req.query;
-      const offset = parseInt(req.query.offset as string) || 0;
-      const limit = parseInt(req.query.limit as string) || 5;
+      const q = req.query;
+      const where: { name?: string; username?: string } = {};
+      if (q.name && q.name) where.name = String(q.name);
+      if (q.username && q.username) where.username = String(q.username);
+      if (!where.name && !where.username) {
+        throw new BadRequest("Você tem que buscar pelo nome ou username!");
+      }
+      let offset = parseInt(q.offset as string) || 0;
+      if (offset <= 0) offset = 0;
+      let limit = parseInt(q.limit as string) || 10;
+      if (limit >= 30 || limit <= 0) limit = 10;
       const users = await userServices.getAllUsers(where, offset, limit);
       res.status(200).json(users);
     } catch (error) {

@@ -12,13 +12,13 @@ import PantryServices from "../PANTRY/pantry/Pantry.Services.js";
 
 import dataSource from "../../database/models/index.js";
 const userModel = dataSource.User;
-const pantryModel = dataSource.Pantry;
 
 const sequelize = dataSource.sequelize;
 
 const pantryServices = new PantryServices();
 
 import { SignUpData, updateData } from "../../core/types/user/user.ts";
+import { Op } from "sequelize";
 
 class UserServices extends Services {
   constructor() {
@@ -26,18 +26,19 @@ class UserServices extends Services {
   }
   //Get
 
-  async getAllUsers(where: any, offset: number, limit: number) {
+  async getAllUsers(
+    where: { name?: string; username?: string },
+    offset: number,
+    limit: number,
+  ) {
     const users = await userModel.findAll({
-      include: [
-        {
-          model: pantryModel,
-          as: "pantries",
-        },
-      ],
       attributes: {
-        exclude: ["password", "updatedAt"],
+        exclude: ["password", "updatedAt", "bio", "password", "email"],
       },
-      where,
+      where: {
+        name: { [Op.like]: where.name },
+        username: { [Op.like]: where.username },
+      },
       offset,
       limit,
     });
@@ -47,7 +48,7 @@ class UserServices extends Services {
   async getUserById(id: number) {
     const users = await userModel.findByPk(id, {
       attributes: {
-        exclude: ["password", "updatedAt"],
+        exclude: ["password", "updatedAt", "bio", "password", "email"],
       },
     });
     return users;
