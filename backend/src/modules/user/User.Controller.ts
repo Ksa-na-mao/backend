@@ -15,17 +15,18 @@ class UserController extends Controller {
   async getUsersBy(req: Request, res: Response, next: NextFunction) {
     try {
       const q = req.query;
-      const where: { name?: string; username?: string } = {};
-      if (q.name && q.name) where.name = String(q.name);
-      if (q.username && q.username) where.username = String(q.username);
-      if (!where.name && !where.username) {
-        throw new BadRequest("Você tem que buscar pelo nome ou username!");
+      const where: { username?: string } = {};
+      if (q.username) where.username = String(q.username);
+      if (!where.username) {
+        throw new BadRequest(
+          "Você tem que escrever o username que deseja buscar!",
+        );
       }
       let offset = parseInt(q.offset as string) || 0;
       if (offset <= 0) offset = 0;
       let limit = parseInt(q.limit as string) || 10;
       if (limit >= 30 || limit <= 0) limit = 10;
-      const users = await userServices.getAllUsers(where, offset, limit);
+      const users = await userServices.getUsersByUsername(where, offset, limit);
       res.status(200).json(users);
     } catch (error) {
       next(error);
@@ -79,9 +80,24 @@ class UserController extends Controller {
   //Delete
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      const email = req.body;
+      const email = req.body.email;
       const userEmail = req.user!.userEmail;
       await userServices.deactivateAccount(email, userEmail);
+      res.status(201).json("Conta desativada!");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deactivateAccountAsAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const userRole = req.user!.role;
+      const id = Number(req.params.id);
+      await userServices.deactivateAccountAsAdmin(id, userRole);
       res.status(201).json("Conta desativada!");
     } catch (error) {
       next(error);

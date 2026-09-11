@@ -1,7 +1,7 @@
 export interface SignUpData {
   email: string;
   password: string;
-  name: string;
+  username: string;
 }
 
 export interface updateData {

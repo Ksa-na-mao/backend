@@ -195,6 +195,36 @@ Router.delete(
 
 /**
  * @swagger
+ * /user/deactivate:
+ *   delete:
+ *     summary: Desativa a conta de um usuário
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Conta desativada com sucesso
+ *       403:
+ *         description: O usuário não pode desativar contas alheias
+ *       404:
+ *         description: Usuário não encontrado
+ */
+Router.delete(
+  "/user/deactivate/:id",
+  verifyAccount,
+  verifyAdmin,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.deactivateAccountAsAdmin(req, res, next),
+);
+
+/**
+ * @swagger
  * /user/update:
  *   put:
  *     summary: Atualiza as informações do perfil do usuário

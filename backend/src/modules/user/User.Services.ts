@@ -10,8 +10,9 @@ import Unauthorized from "@/core/Errors/Unauthorized.ts";
 
 import PantryServices from "../PANTRY/pantry/Pantry.Services.js";
 
-import dataSource from "../../database/models/index.js";
+import dataSource from "@models/index.js";
 const userModel = dataSource.User;
+const recipeModel = dataSource.Recipe;
 
 const sequelize = dataSource.sequelize;
 
@@ -26,17 +27,26 @@ class UserServices extends Services {
   }
   //Get
 
-  async getAllUsers(
-    where: { name?: string; username?: string },
+  async getUsersByUsername(
+    where: { username?: string },
     offset: number,
     limit: number,
   ) {
+    where.username = `%${where.username}%`;
     const users = await userModel.findAll({
       attributes: {
-        exclude: ["password", "updatedAt", "bio", "password", "email"],
+        exclude: [
+          "password",
+          "updatedAt",
+          "bio",
+          "password",
+          "email",
+          "role",
+          "deletedAt",
+          "createdAt",
+        ],
       },
       where: {
-        name: { [Op.like]: where.name },
         username: { [Op.like]: where.username },
       },
       offset,
@@ -46,12 +56,19 @@ class UserServices extends Services {
   }
 
   async getUserById(id: number) {
-    const users = await userModel.findByPk(id, {
+    const user = await userModel.findByPk(id, {
       attributes: {
-        exclude: ["password", "updatedAt", "bio", "password", "email"],
+        exclude: ["password", "updatedAt", "role", "email"],
       },
+      include: [
+        {
+          model: recipeModel,
+          as: "userRecepies",
+        },
+      ],
     });
-    return users;
+
+    return user;
   }
 
   //Post
@@ -65,7 +82,7 @@ class UserServices extends Services {
         defaults: {
           email: userData.email,
           password: userData.password,
-          name: userData.name,
+          username: userData.username,
         },
         transaction: t,
       });
@@ -106,10 +123,21 @@ class UserServices extends Services {
   }
 
   //Delete
-  async deactivateAccount(email: { email: string }, userEmail: string) {
-    if (userEmail === email.email) {
+  async deactivateAccount(email: string, userEmail: string) {
+    if (userEmail === email) {
       const response = await userModel.destroy({
         where: { email: userEmail },
+      });
+      return response;
+    } else {
+      throw new Forbidden("Você só pode desativar a sua conta!");
+    }
+  }
+
+  async deactivateAccountAsAdmin(id: number, userRole: string) {
+    if (userRole === "admin") {
+      const response = await userModel.destroy({
+        where: { id },
       });
       return response;
     } else {
