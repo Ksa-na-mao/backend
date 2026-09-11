@@ -2,7 +2,6 @@ import Services from "@Services";
 import dataSource from "@models/index.ts";
 import BadRequest from "@Errors/BadRequest.ts";
 import Forbidden from "@Errors/Forbidden.ts";
-import BaseError from "@Errors/BaseError.ts";
 
 import { dataUpdate, dataPost } from "@Types/pantry/pantry.ts";
 import { Transaction } from "sequelize";
