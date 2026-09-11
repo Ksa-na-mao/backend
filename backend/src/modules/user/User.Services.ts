@@ -58,7 +58,7 @@ class UserServices extends Services {
   async getUserById(id: number) {
     const user = await userModel.findByPk(id, {
       attributes: {
-        exclude: ["password", "updatedAt", "role", "email"],
+        exclude: ["password", "updatedAt", "role", "email", "deletedAt"],
       },
       include: [
         {
@@ -74,32 +74,40 @@ class UserServices extends Services {
   //Post
 
   async signUp(userData: SignUpData) {
-    return await sequelize.transaction(async (t) => {
-      const [user, created] = await userModel.findOrCreate({
-        where: {
-          email: userData.email,
-        },
-        defaults: {
-          email: userData.email,
-          password: userData.password,
-          username: userData.username,
-        },
-        transaction: t,
-      });
-
-      if (!created) {
-        throw new BadRequest("Conta já existe!");
-      }
-
-      const data = {
-        userId: user.id,
-        name: "Primeiro estoque!",
-      };
-
-      await pantryServices.createPantryAndShoppingList(data, t);
-
-      return auth(user);
+    const userNameExists = await userModel.findOne({
+      where: { username: userData.username },
     });
+    if (!userNameExists) {
+      {
+        return await sequelize.transaction(async (t) => {
+          const [user, created] = await userModel.findOrCreate({
+            where: {
+              email: userData.email,
+            },
+            defaults: {
+              email: userData.email,
+              password: userData.password,
+              username: userData.username,
+            },
+            transaction: t,
+          });
+
+          if (!created) {
+            throw new BadRequest("Conta já existe!");
+          }
+
+          const data = {
+            userId: user.id,
+            name: "Primeiro estoque!",
+          };
+
+          await pantryServices.createPantryAndShoppingList(data, t);
+
+          return auth(user);
+        });
+      }
+    }
+    throw new BadRequest("Esse username já está sendo usado.");
   }
 
   //
