@@ -11,6 +11,7 @@ class User extends Model {
   declare bio: string;
   declare pfp: string;
   declare role: string;
+  declare username: string;
 
   static associate(models: DatabaseModels) {
     User.hasMany(models.Notification, {

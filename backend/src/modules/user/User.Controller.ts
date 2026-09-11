@@ -70,7 +70,8 @@ class UserController extends Controller {
     try {
       const data = req.body;
       const userEmail = req.user.userEmail;
-      await userServices.updateAccount(data, userEmail);
+      const userRole = req.user.role;
+      await userServices.updateAccount(data, userEmail, userRole);
       res.status(201).json("Conta atualizada com sucesso!");
     } catch (error) {
       next(error);

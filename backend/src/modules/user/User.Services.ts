@@ -41,7 +41,6 @@ class UserServices extends Services {
           "bio",
           "password",
           "email",
-          "role",
           "deletedAt",
           "createdAt",
         ],
@@ -123,11 +122,35 @@ class UserServices extends Services {
   }
 
   //Update
-  async updateAccount(data: updateData, userEmail: string) {
-    const response = await userModel.update(data, {
-      where: { email: userEmail },
-    });
-    return response;
+  async updateAccount(data: updateData, userEmail: string, userRole: string) {
+    if (data.role !== "user" && userRole !== "admin") {
+      throw new Forbidden("Você não é admin, espertinho.");
+    }
+    const user = await userModel.findOne({ where: { email: userEmail } });
+    if (user) {
+      const realData = {
+        name: data.name ? data.name : user.name,
+        bio: data.bio ? data.bio : user.bio,
+        pfp: data.pfp ? data.pfp : user.pfp,
+        username: data.username ? data.username : user.username,
+      };
+
+      if (
+        user.name === realData.name &&
+        user.bio === realData.bio &&
+        user.pfp === realData.pfp &&
+        user.username === realData.username
+      ) {
+        throw new BadRequest(
+          "Você precisa mandar algo diferente para ser atualizado.",
+        );
+      }
+      const response = await userModel.update(realData, {
+        where: { email: userEmail },
+      });
+      return response;
+    }
+    throw new BadRequest("Parece que esse email não existe...");
   }
 
   //Delete

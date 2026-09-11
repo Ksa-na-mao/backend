@@ -12,4 +12,5 @@ export interface updateData {
   bio: string;
   pfp: string;
   role: string;
+  username: string;
 }
