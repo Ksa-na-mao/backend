@@ -59,12 +59,6 @@ class UserServices extends Services {
       attributes: {
         exclude: ["password", "updatedAt", "role", "email", "deletedAt"],
       },
-      include: [
-        {
-          model: recipeModel,
-          as: "userRecepies",
-        },
-      ],
     });
 
     return user;
