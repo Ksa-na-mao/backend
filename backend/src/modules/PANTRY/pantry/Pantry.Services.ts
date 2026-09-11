@@ -21,8 +21,12 @@ class PantryServices extends Services {
   }
 
   //Get
-  async getMyPantries(userId: number) {
-    const response = await Pantry.findAll({ where: { userId: userId } });
+  async getMyPantries(userId: number, offset: number, limit: number) {
+    const response = await Pantry.findAll({
+      where: { userId: userId },
+      limit,
+      offset,
+    });
     return response;
   }
 
@@ -95,7 +99,7 @@ class PantryServices extends Services {
       });
 
       if (!created) {
-        throw new BaseError("Já existe um estoque com esse nome.");
+        throw new Conflict("Já existe um estoque com esse nome.");
       }
 
       await PantryUsers.create(
@@ -148,16 +152,21 @@ class PantryServices extends Services {
   //Delete
 
   async deletePantry(id: number, userId: number) {
+    const howMany = await Pantry.findAndCountAll({ where: { userId: userId } });
     const creatorId = await Pantry.findOne({
       where: { id: id, userId: userId },
     });
     if (creatorId) {
-      const apagado = await Pantry.destroy({
-        where: { id },
-      });
+      if (howMany.count > 1) {
+        const apagado = await Pantry.destroy({
+          where: { id },
+        });
 
-      console.log(apagado);
-      return apagado;
+        return apagado;
+      } else
+        throw new BadRequest(
+          "Você só pode apagar um estoque se você participa de mais de um.",
+        );
     }
     throw new Forbidden("Você só pode deletar os seus próprios estoques!");
   }

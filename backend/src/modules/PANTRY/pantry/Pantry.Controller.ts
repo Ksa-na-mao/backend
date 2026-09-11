@@ -12,8 +12,17 @@ class PantryController extends Controller {
   //Get
   async getMyPantries(req: Request, res: Response, next: NextFunction) {
     try {
+      const q = req.query;
+      let offset = parseInt(q.offset as string) || 0;
+      if (offset <= 0) offset = 0;
+      let limit = parseInt(q.limit as string) || 5;
+      if (limit >= 30 || limit <= 0) limit = 5;
       const userId = req.user!.userId;
-      const response = await pantryServices.getMyPantries(userId);
+      const response = await pantryServices.getMyPantries(
+        userId,
+        offset,
+        limit,
+      );
       res.status(200).json(response);
     } catch (error) {
       next(error);

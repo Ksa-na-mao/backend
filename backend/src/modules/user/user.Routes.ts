@@ -133,8 +133,8 @@ Router.post("/register", (req: Request, res: Response, next: NextFunction) =>
  *         description: Usuário logado com sucesso
  *       404:
  *         description: Email não encontrado
- *       401:
- *         description: Senha incorreta
+ *       409:
+ *         description: Já existe um estoque seu com esse nome
  */
 Router.post("/login", (req: Request, res: Response, next: NextFunction) =>
   userController.login(req, res, next),
