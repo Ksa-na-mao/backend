@@ -1,0 +1,38 @@
+import express, { Request, Response, NextFunction } from "express";
+
+import verifyAccount from "@verifyAccount";
+import IngredientController from "./Ingredient.Controller";
+
+const ingredientController = new IngredientController();
+
+const Router = express.Router();
+
+Router.get(
+  "/ingredients",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    ingredientController.getAll(req, res, next),
+);
+
+Router.post(
+  "/ingredients/post",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    ingredientController.post(req, res, next),
+);
+
+Router.patch(
+  "/ingredients/update/:id",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    ingredientController.updateIngredient(req, res, next),
+);
+
+Router.delete(
+  "/ingredients/delete/:id",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    ingredientController.delete(req, res, next),
+);
+
+export default Router;

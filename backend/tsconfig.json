@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@models/*": ["./src/database/models/*"],
+      "@Controller": ["./src/core/Controller/Controller.ts"],
+      "@Services": ["./src/core/Services/Services.ts"],
+      "@Errors/*": ["./src/core/Errors/*"],
+      "@Types/*": ["./src/core/types/*"],
+
+      "@verifyAccount": ["./src/core/jwt/verifyAccount.ts"],
+      "@verifyAdmin": ["./src/core/jwt/verifyAdmin.ts"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+
+  "include": ["src/**/*", "server.ts"]
+}
