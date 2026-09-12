@@ -1,7 +1,7 @@
 import Unauthorized from "../Errors/Unauthorized.ts";
 import verifyToken from "./verifyToken.js";
 import { Request, Response, NextFunction } from "express";
-import UserServices from "@/modules/user/User.Services.ts";
+import UserServices from "@/modules/user/User.Service.ts";
 import Forbidden from "../Errors/Forbidden.ts";
 const userServices = new UserServices();
 

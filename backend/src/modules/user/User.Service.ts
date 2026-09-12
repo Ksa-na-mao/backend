@@ -2,6 +2,8 @@ import Services from "@Services";
 
 import auth from "../../core/jwt/jwt.ts";
 import bcrypt from "bcrypt";
+import BrevoService from "@/core/APIs/brevo/Brevo.Service.ts";
+const brevoService = new BrevoService();
 
 import BadRequest from "@Errors/BadRequest.js";
 import Forbidden from "@Errors/Forbidden.js";
@@ -12,7 +14,7 @@ import PantryServices from "../PANTRY/pantry/Pantry.Services.js";
 
 import dataSource from "@models/index.js";
 const userModel = dataSource.User;
-const recipeModel = dataSource.Recipe;
+const userChangeToken = dataSource.UserChangeToken;
 
 const sequelize = dataSource.sequelize;
 
@@ -20,6 +22,7 @@ const pantryServices = new PantryServices();
 
 import { SignUpData, updateData } from "../../core/types/user/user.ts";
 import { Op } from "sequelize";
+import BaseError from "@/core/Errors/BaseError.ts";
 
 class UserServices extends Services {
   constructor() {
@@ -35,15 +38,7 @@ class UserServices extends Services {
     where.username = `%${where.username}%`;
     const users = await userModel.findAll({
       attributes: {
-        exclude: [
-          "password",
-          "updatedAt",
-          "bio",
-          "password",
-          "email",
-          "deletedAt",
-          "createdAt",
-        ],
+        exclude: ["password", "updatedAt", "bio", "deletedAt", "createdAt"],
       },
       where: {
         username: { [Op.like]: where.username },
@@ -145,6 +140,98 @@ class UserServices extends Services {
       return response;
     }
     throw new BadRequest("Parece que esse email não existe...");
+  }
+
+  async updatePassword(password: string, userId: number, newPassword: string) {
+    const user = await userModel.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error404("Usuário não encontrado.");
+    }
+
+    const isTheSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (!isTheSamePassword) {
+      const isApproved = await bcrypt.compare(password, user.password);
+
+      if (!isApproved) {
+        throw new Forbidden("Senha incorreta!");
+      }
+
+      const setNewPassword = { password: newPassword };
+
+      const userUpdated = await userModel.update(setNewPassword, {
+        where: { id: userId },
+      });
+      if (userUpdated) return { message: "Conta atualizada com sucesso!" };
+      else throw new BaseError("Algum erro interno do servidor aconteceu");
+    } else throw new BadRequest("A senha é exatamente igual a sua original.");
+  }
+
+  async sendEmail(email: string, userId: number) {
+    try {
+      const user = await userModel.findOne({
+        attributes: {
+          exclude: [
+            "password",
+            "updatedAt",
+            "bio",
+            "password",
+            "deletedAt",
+            "createdAt",
+          ],
+        },
+        where: { id: userId },
+      });
+      await brevoService.changeEmail(email, user!.username, userId);
+      return {
+        message:
+          "Enviamos um email pra você conseguir fazer a alteração desejada!",
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateEmail(
+    userId: number,
+    newEmail: { email: string },
+    token?: string,
+  ) {
+    const user = await userModel.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error404("Usuário não encontrado.");
+    }
+
+    const dateNow = new Date();
+    const isValidToken = await userChangeToken.findOne({
+      where: {
+        userId: userId,
+        token: token,
+        expiresAt: { [Op.gt]: dateNow },
+      },
+      order: [["createdAt", "DESC"]],
+    });
+    if (isValidToken && !isValidToken.used) {
+      const updateEmail = { email: newEmail };
+      const result = await sequelize.transaction(async (t) => {
+        const userUpdated = await userModel.update(updateEmail, {
+          where: { id: userId },
+          transaction: t,
+        });
+
+        const setTrue = { used: true };
+
+        await userChangeToken.update(setTrue, {
+          where: { id: isValidToken.id },
+          transaction: t,
+        });
+
+        if (userUpdated) return { message: "Conta atualizada com sucesso!" };
+        else throw new BaseError("Algum erro interno do servidor aconteceu");
+      });
+      return result;
+    } else throw new Forbidden("Seu token expirou... tente pedir outro email!");
   }
 
   //Delete

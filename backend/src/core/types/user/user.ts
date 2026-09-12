@@ -7,8 +7,6 @@ export interface SignUpData {
 export interface updateData {
   id: number;
   name: string;
-  email: string;
-  password: string;
   bio: string;
   pfp: string;
   role: string;

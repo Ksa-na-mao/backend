@@ -1,5 +1,5 @@
 import Controller from "@Controller";
-import UserServices from "./User.Services";
+import UserServices from "./User.Service";
 import { Request, Response, NextFunction } from "express";
 import BadRequest from "@/core/Errors/BadRequest";
 
@@ -71,13 +71,59 @@ class UserController extends Controller {
       const data = req.body;
       const userEmail = req.user.userEmail;
       const userRole = req.user.role;
-      await userServices.updateAccount(data, userEmail, userRole);
-      res.status(201).json("Conta atualizada com sucesso!");
+      const response = await userServices.updateAccount(
+        data,
+        userEmail,
+        userRole,
+      );
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
   }
 
+  async updatePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { password, newPassword } = req.body;
+      const userId = Number(req.user!.userId);
+      const response = await userServices.updatePassword(
+        password,
+        userId,
+        newPassword,
+      );
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async sendToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = Number(req.user!.userId);
+      const email = req.user!.userEmail;
+      const response = await userServices.sendEmail(email, userId);
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = Number(req.user!.userId);
+      const { newEmail } = req.body;
+      const { token } = req.query;
+      const tokenString = String(token);
+      const response = await userServices.updateEmail(
+        userId,
+        newEmail,
+        tokenString,
+      );
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
   //Delete
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
