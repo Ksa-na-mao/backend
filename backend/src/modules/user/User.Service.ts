@@ -175,6 +175,7 @@ class UserServices extends Services {
             "password",
             "updatedAt",
             "bio",
+            "email",
             "password",
             "deletedAt",
             "createdAt",
