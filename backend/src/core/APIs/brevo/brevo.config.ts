@@ -1,5 +1,9 @@
 import { BrevoClient } from "@getbrevo/brevo";
-const client = new BrevoClient({ apiKey: process.env.BREVO_API_KEY as string });
+
+const client = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY as string,
+});
+
 async function updateEmail(userEmail: string, userName: string, token: string) {
   const confirmUrl = `http://localhost:3000/users/update/email/confirm?token=${token}`;
 
@@ -21,7 +25,7 @@ async function updateEmail(userEmail: string, userName: string, token: string) {
     htmlContent: `
       <html>
         <body>
-          <h2>Olá, {{userName}}!</h2>
+          <h2>Olá, ${userName}!</h2>
 
           <p>
             Recebemos uma solicitação para trocar o e-mail da sua conta.
@@ -57,10 +61,7 @@ async function updateEmail(userEmail: string, userName: string, token: string) {
         </body>
       </html>
     `,
-
-    params: {
-      userName,
-    },
   });
 }
+
 export default updateEmail;
