@@ -19,7 +19,7 @@ class RecipeIngredientController extends Controller {
     }
   }
 
-  //update
+  //Update
   async updateIngredient(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params.id);

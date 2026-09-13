@@ -69,13 +69,9 @@ class UserController extends Controller {
   async updateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const data = req.body;
-      const userEmail = req.user.userEmail;
+      const userId = Number(req.user.userId);
       const userRole = req.user.role;
-      const response = await userServices.updateAccount(
-        data,
-        userEmail,
-        userRole,
-      );
+      const response = await userServices.updateAccount(data, userId, userRole);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -113,8 +109,7 @@ class UserController extends Controller {
   ) {
     try {
       const userId = Number(req.user!.userId);
-      const email = req.user!.userEmail;
-      const response = await userServices.sendEmail(email, userId, type);
+      const response = await userServices.sendEmail(userId, type);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -156,8 +151,8 @@ class UserController extends Controller {
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const email = req.body.email;
-      const userEmail = req.user!.userEmail;
-      await userServices.deactivateAccount(email, userEmail);
+      const id = Number(req.user.userId);
+      await userServices.deactivateAccount(email, id);
       res.status(201).json("Conta desativada!");
     } catch (error) {
       next(error);
