@@ -12,3 +12,8 @@ export interface updateData {
   role: string;
   username: string;
 }
+
+export interface UserPasswordOrEmail {
+  email?: string;
+  password?: string;
+}

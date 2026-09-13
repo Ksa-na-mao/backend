@@ -30,7 +30,21 @@ Router.get(
   "/users/send-email",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    userController.sendToken(req, res, next),
+    userController.sendTokenEmail(req, res, next),
+);
+
+Router.get(
+  "/forgot/send-email",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.sendTokenPassword(req, res, next),
+);
+
+Router.put(
+  "/users/password/reset",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.forgotPassword(req, res, next),
 );
 
 Router.put(

@@ -20,7 +20,11 @@ const sequelize = dataSource.sequelize;
 
 const pantryServices = new PantryServices();
 
-import { SignUpData, updateData } from "../../core/types/user/user.ts";
+import {
+  SignUpData,
+  updateData,
+  UserPasswordOrEmail,
+} from "../../core/types/user/user.ts";
 import { Op } from "sequelize";
 import BaseError from "@/core/Errors/BaseError.ts";
 
@@ -38,7 +42,14 @@ class UserServices extends Services {
     where.username = `%${where.username}%`;
     const users = await userModel.findAll({
       attributes: {
-        exclude: ["password", "updatedAt", "bio", "deletedAt", "createdAt"],
+        exclude: [
+          "password",
+          "updatedAt",
+          "email",
+          "bio",
+          "deletedAt",
+          "createdAt",
+        ],
       },
       where: {
         username: { [Op.like]: where.username },
@@ -167,35 +178,9 @@ class UserServices extends Services {
     } else throw new BadRequest("A senha é exatamente igual a sua original.");
   }
 
-  async sendEmail(email: string, userId: number) {
-    try {
-      const user = await userModel.findOne({
-        attributes: {
-          exclude: [
-            "password",
-            "updatedAt",
-            "bio",
-            "email",
-            "password",
-            "deletedAt",
-            "createdAt",
-          ],
-        },
-        where: { id: userId },
-      });
-      await brevoService.changeEmail(email, user!.username, userId);
-      return {
-        message:
-          "Enviamos um email pra você conseguir fazer a alteração desejada!",
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async updateEmail(
+  async updateEmailOrPassword(
     userId: number,
-    newEmail: { email: string },
+    newData: UserPasswordOrEmail,
     token?: string,
   ) {
     const user = await userModel.findOne({ where: { id: userId } });
@@ -214,23 +199,37 @@ class UserServices extends Services {
       order: [["createdAt", "DESC"]],
     });
     if (isValidToken && !isValidToken.used) {
-      const updateEmail = { email: newEmail };
+      let updateData;
+      if (newData.email) {
+        updateData = { email: newData.email };
+      } else if (newData.password) {
+        const isTheSamePassword = await bcrypt.compare(
+          newData.password,
+          user.password,
+        );
+        if (isTheSamePassword)
+          throw new BadRequest("É exatamente a mesma senha...");
+        updateData = { password: newData.password };
+      } else throw new BadRequest("Esse campo não está aberto para mudanças.");
+
       const result = await sequelize.transaction(async (t) => {
-        const userUpdated = await userModel.update(updateEmail, {
+        await userModel.update(updateData, {
           where: { id: userId },
           transaction: t,
+          individualHooks: true,
         });
 
-        const setTrue = { used: true };
+        await userChangeToken.update(
+          { used: true },
+          {
+            where: { id: isValidToken.id },
+            transaction: t,
+          },
+        );
 
-        await userChangeToken.update(setTrue, {
-          where: { id: isValidToken.id },
-          transaction: t,
-        });
-
-        if (userUpdated) return { message: "Conta atualizada com sucesso!" };
-        else throw new BaseError("Algum erro interno do servidor aconteceu");
+        return { message: "Conta atualizada com sucesso!" };
       });
+
       return result;
     } else throw new Forbidden("Seu token expirou... tente pedir outro email!");
   }
@@ -255,6 +254,37 @@ class UserServices extends Services {
       return response;
     } else {
       throw new Forbidden("Você só pode desativar a sua conta!");
+    }
+  }
+
+  //Send email
+
+  async sendEmail(email: string, userId: number, type: number) {
+    try {
+      const user = await userModel.findOne({
+        attributes: {
+          exclude: [
+            "password",
+            "updatedAt",
+            "bio",
+            "password",
+            "deletedAt",
+            "createdAt",
+          ],
+        },
+        where: { id: userId },
+      });
+      if (type === 1) {
+        await brevoService.sendEmail(email, user!.username, userId, 1);
+      } else if (type === 2) {
+        await brevoService.sendEmail(email, user!.username, userId, 2);
+      }
+      return {
+        message:
+          "Enviamos um email pra você conseguir fazer a alteração desejada!",
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }

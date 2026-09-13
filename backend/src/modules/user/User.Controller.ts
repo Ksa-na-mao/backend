@@ -97,26 +97,53 @@ class UserController extends Controller {
     }
   }
 
-  async sendToken(req: Request, res: Response, next: NextFunction) {
+  async sendTokenEmail(req: Request, res: Response, next: NextFunction) {
+    return this.emailController(req, res, next, 1);
+  }
+
+  async sendTokenPassword(req: Request, res: Response, next: NextFunction) {
+    return this.emailController(req, res, next, 2);
+  }
+
+  async emailController(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    type: number,
+  ) {
     try {
       const userId = Number(req.user!.userId);
       const email = req.user!.userEmail;
-      const response = await userServices.sendEmail(email, userId);
-      res.status(201).json(response);
+      const response = await userServices.sendEmail(email, userId, type);
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }
   }
 
   async updateEmail(req: Request, res: Response, next: NextFunction) {
+    const email = req.body;
+    this.forgotPasswordOrUpdateEmail(req, res, next, email);
+  }
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    const password = req.body;
+    this.forgotPasswordOrUpdateEmail(req, res, next, password);
+  }
+
+  async forgotPasswordOrUpdateEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    data: { password: string } | { email: string },
+  ) {
     try {
       const userId = Number(req.user!.userId);
-      const { newEmail } = req.body;
       const { token } = req.query;
       const tokenString = String(token);
-      const response = await userServices.updateEmail(
+      const response = await userServices.updateEmailOrPassword(
         userId,
-        newEmail,
+        data,
         tokenString,
       );
       res.status(201).json(response);
@@ -124,6 +151,7 @@ class UserController extends Controller {
       next(error);
     }
   }
+
   //Delete
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
