@@ -45,6 +45,10 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      picture:{
+        type: DataTypes.STRING,
+        allowNull: false,
+      }
     },
     {
       sequelize,
