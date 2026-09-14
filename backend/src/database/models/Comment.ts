@@ -1,4 +1,5 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from ".";
 
 class Comment extends Model {
   declare id: number;
@@ -6,7 +7,7 @@ class Comment extends Model {
   declare recipeId: number | null;
   declare text: string;
 
-  static associate(models: any) {
+  static associate(models: DatabaseModels) {
     Comment.belongsTo(models.User, {
       foreignKey: "userId",
       as: "user",

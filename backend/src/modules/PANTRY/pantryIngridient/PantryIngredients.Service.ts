@@ -1,8 +1,8 @@
-import Services from "../../../core/Services/Services";
-import dataSource from "../../../database/models";
-import BadRequest from "../../../core/Errors/BadRequest";
-import Forbidden from "../../../core/Errors/Forbidden";
-import { pantryIngredients } from "../../../core/types/pantryIngredients/pantryIngredients.ts";
+import Services from "@/core/Services/Services";
+import dataSource from "@models/index.ts";
+import BadRequest from "@Errors/BadRequest";
+import Forbidden from "@Errors/Forbidden";
+import { pantryIngredients } from "@Types/pantryIngredients/pantryIngredients.ts";
 
 const sequelize = dataSource.sequelize;
 
@@ -27,38 +27,40 @@ class PantryIngredientServices extends Services {
   //Post
 
   async post(pantryId: number, ingredients: any[], reqUserId: number) {
-    if (ingredients && (await this.getPantryUsersId(pantryId, reqUserId))) {
-      return await sequelize.transaction(async (t) => {
-        return await Promise.all(
-          ingredients.map(async (ingredient) => {
-            const [pantryIngredient, created] =
-              await PantryIngredient.findOrCreate({
-                where: {
-                  ingredientId: ingredient.id,
-                  pantryId: pantryId,
-                },
-                defaults: {
-                  currentQuantity: ingredient.currentQuantity,
-                  minimumQuantity: ingredient.minimumQuantity,
-                },
-                transaction: t,
-              });
-            if (!created) {
-              pantryIngredient.currentQuantity += ingredient.currentQuantity;
-              const minimum = ingredient.minimumQuantity
-                ? ingredient.minimumQuantity
-                : pantryIngredient.minimumQuantity;
-              pantryIngredient.minimumQuantity = minimum;
+    if (ingredients) {
+      if (await this.getPantryUsersId(pantryId, reqUserId)) {
+        return await sequelize.transaction(async (t) => {
+          return await Promise.all(
+            ingredients.map(async (ingredient) => {
+              const [pantryIngredient, created] =
+                await PantryIngredient.findOrCreate({
+                  where: {
+                    ingredientId: ingredient.ingredientId,
+                    pantryId: pantryId,
+                  },
+                  defaults: {
+                    currentQuantity: ingredient.currentQuantity,
+                    minimumQuantity: ingredient.minimumQuantity,
+                  },
+                  transaction: t,
+                });
+              if (!created) {
+                pantryIngredient.currentQuantity += ingredient.currentQuantity;
+                const minimum = ingredient.minimumQuantity
+                  ? ingredient.minimumQuantity
+                  : pantryIngredient.minimumQuantity;
+                pantryIngredient.minimumQuantity = minimum;
 
-              await pantryIngredient.save({
-                transaction: t,
-              });
-            }
+                await pantryIngredient.save({
+                  transaction: t,
+                });
+              }
 
-            return pantryIngredient;
-          }),
-        );
-      });
+              return pantryIngredient;
+            }),
+          );
+        });
+      } else throw new Forbidden();
     } else throw new BadRequest("Selecione um ingrediente.");
   }
 
@@ -81,7 +83,6 @@ class PantryIngredientServices extends Services {
                 },
                 transaction: t,
               });
-
               if (!update) {
                 return await PantryIngredient.create(
                   {
@@ -97,10 +98,10 @@ class PantryIngredientServices extends Services {
               }
 
               update.currentQuantity = ingredient.currentQuantity
-                ? ingredient.currentQuantity
+                ? (ingredient.currentQuantity += update.currentQuantity)
                 : update.currentQuantity;
               update.minimumQuantity = ingredient.minimumQuantity
-                ? ingredient.minimumQuantity
+                ? (ingredient.minimumQuantity += update.minimumQuantity)
                 : update.minimumQuantity;
               update.expirationDate = ingredient.expirationDate
                 ? ingredient.expirationDate
@@ -126,9 +127,10 @@ class PantryIngredientServices extends Services {
     userId: number,
   ) {
     if (await this.getPantryUsersId(pantryId, userId)) {
-      await PantryIngredient.destroy({
+      const deleted = await PantryIngredient.destroy({
         where: { ingredientId: ingredientId, pantryId },
       });
+      return deleted;
     } else {
       throw new Forbidden();
     }

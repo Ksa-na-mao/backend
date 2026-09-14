@@ -2,13 +2,11 @@ import { RecipeIngredientPost } from "../recipeIngredient/recipeIngredient";
 
 export interface recipePost {
   userId: number;
-  data: {
-    title: string;
-    description: string;
-    isPublic: boolean;
-    category: string;
-    RecipeIngredients: RecipeIngredientPost[];
-  };
+  title: string;
+  description: string;
+  isPublic: boolean;
+  category: string;
+  RecipeIngredients: RecipeIngredientPost[];
 }
 
 export interface recipeUpdate {

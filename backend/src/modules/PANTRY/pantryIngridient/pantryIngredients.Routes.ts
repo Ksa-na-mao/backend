@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 
-import verifyAccount from "../../../core/jwt/verifyAccount";
-import PantryIngredientController from "./PantryIngredientsController";
+import verifyAccount from "@verifyAccount";
+import PantryIngredientController from "./PantryIngredients.Controller";
 
 const pantryIngredientController = new PantryIngredientController();
 
@@ -11,18 +11,11 @@ Router.post(
   "/pantryIngredient/post/pantryId/:pantryId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    pantryIngredientController.post(req, res, next),
-);
-
-Router.patch(
-  "/pantryIngredient/update/:pantryId/:ingredientId",
-  verifyAccount,
-  (req: Request, res: Response, next: NextFunction) =>
-    pantryIngredientController.update(req, res, next),
+    pantryIngredientController.postIngredient(req, res, next),
 );
 
 Router.delete(
-  "/pantryIngredient/delete/:pantryId/:ingredientsId",
+  "/pantryIngredient/delete/:pantryId/:ingredientId",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     pantryIngredientController.delete(req, res, next),

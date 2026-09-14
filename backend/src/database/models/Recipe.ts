@@ -1,4 +1,5 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { RecipeIngredientPost } from "../../core/types/recipeIngredient/recipeIngredient";
 
 class Recipe extends Model {
   declare id: number;
@@ -8,6 +9,7 @@ class Recipe extends Model {
   declare description: string;
   declare isPublic: boolean;
   declare category: string;
+  declare recipeIngredients: RecipeIngredientPost[];
 
   static associate(models: any) {
     Recipe.belongsTo(models.User, {

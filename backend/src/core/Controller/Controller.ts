@@ -1,5 +1,4 @@
-import BadRequest from "../Errors/BadRequest.js";
-import Services from "../Services/Services.js";
+import Services from "@Services/Services.ts";
 import { Request, Response, NextFunction } from "express";
 
 class Controller {
@@ -40,7 +39,7 @@ class Controller {
   //Put
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = Number(req.query.id);
+      const id = Number(req.params.id);
       const data = req.body;
       await this.service.update(data, id, req.user!.userId);
       res.status(201).json("Recurso atualizado com sucesso!");
@@ -52,8 +51,7 @@ class Controller {
   //Delete
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log(req.user!.userId);
-      const id = Number(req.query.id);
+      const id = Number(req.params.id);
       await this.service.delete(id, req.user!.userId);
       res.status(201).json("Recurso deletado com sucesso!");
     } catch (error) {

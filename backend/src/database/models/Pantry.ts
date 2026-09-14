@@ -1,12 +1,13 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from ".";
 
 class Pantry extends Model {
   declare id: number;
   declare name: string;
 
-  static associate(models: any) {
+  static associate(models: DatabaseModels) {
     Pantry.belongsToMany(models.User, {
-      through: "PantryUser",
+      through: models.PantryUser,
       foreignKey: "pantryId",
       otherKey: "userId",
       as: "users",

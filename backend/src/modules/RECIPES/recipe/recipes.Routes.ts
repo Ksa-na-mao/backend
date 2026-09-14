@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import verifyAccount from "../../../core/jwt/verifyAccount.js";
-import RecipeController from "./RecipeController.js";
+import RecipeController from "./Recipe.Controller.js";
 const recipeController = new RecipeController();
 
 const Router = express.Router();
@@ -34,6 +34,12 @@ Router.post(
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     recipeController.post(req, res, next),
+);
+Router.post(
+  "/recipe/make/recipeId/:recipeId/pantry/:pantryId",
+  verifyAccount,
+  (req: Request, res: Response, next: NextFunction) =>
+    recipeController.makeARecipe(req, res, next),
 );
 Router.put(
   "/recipe/update/:recipeId",

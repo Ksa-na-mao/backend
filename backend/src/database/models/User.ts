@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import goodPassword from "../../modules/user/helper/goodPassword.ts";
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from "./index.ts";
 
 class User extends Model {
   declare id: number;
@@ -10,8 +11,9 @@ class User extends Model {
   declare bio: string;
   declare pfp: string;
   declare role: string;
+  declare username: string;
 
-  static associate(models: any) {
+  static associate(models: DatabaseModels) {
     User.hasMany(models.Notification, {
       foreignKey: "userId",
       as: "userNotifications",
@@ -33,7 +35,7 @@ class User extends Model {
     });
 
     User.belongsToMany(models.Pantry, {
-      through: "PantryUser",
+      through: models.PantryUser,
       foreignKey: "userId",
       otherKey: "pantryId",
       as: "pantries",
@@ -66,16 +68,26 @@ class User extends Model {
 export default (sequelize: Sequelize) => {
   User.init(
     {
-      name: {
+      username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           len: {
             args: [3, 100],
             msg: "O nome deve ter entre 3 e 100 caracteres",
           },
           notEmpty: true,
+          noSpaces(value: string) {
+            if (/\s/.test(value)) {
+              throw new Error("O nome de usuário não pode conter espaços");
+            }
+          },
         },
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       email: {
         unique: true,
@@ -111,8 +123,10 @@ export default (sequelize: Sequelize) => {
       sequelize,
       modelName: "User",
       hooks: {
-        beforeCreate: async (user) => {
-          user.password = await bcrypt.hash(user.password, 12);
+        beforeSave: async (user) => {
+          if (user.changed("password")) {
+            user.password = await bcrypt.hash(user.password, 12);
+          }
         },
       },
       paranoid: true,

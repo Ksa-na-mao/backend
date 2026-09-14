@@ -1,11 +1,11 @@
-import Services from "../../../core/Services/Services";
-import dataSource from "../../../database/models";
-import BadRequest from "../../../core/Errors/BadRequest";
-import Forbidden from "../../../core/Errors/Forbidden";
-import BaseError from "../../../core/Errors/BaseError";
+import Services from "@/core/Services/Services";
+import dataSource from "@models/index.ts";
+import BadRequest from "@Errors/BadRequest.ts";
+import Forbidden from "@Errors/Forbidden.ts";
 
-import { dataUpdate, dataPost } from "../../../core/types/pantry/pantry.ts";
+import { dataUpdate, dataPost } from "@Types/pantry/pantry.ts";
 import { Transaction } from "sequelize";
+import Conflict from "@/core/Errors/Conflict";
 
 const sequelize = dataSource.sequelize;
 
@@ -21,8 +21,12 @@ class PantryServices extends Services {
   }
 
   //Get
-  async getMyPantries(userId: number) {
-    const response = await Pantry.findAll({ where: { userId: userId } });
+  async getMyPantries(userId: number, offset: number, limit: number) {
+    const response = await Pantry.findAll({
+      where: { userId: userId },
+      limit,
+      offset,
+    });
     return response;
   }
 
@@ -37,6 +41,7 @@ class PantryServices extends Services {
     if (!membership) {
       throw new Forbidden("Você nao quer ver isso...");
     }
+
     const pantry = await Pantry.findOne({
       where: { id },
       include: [
@@ -46,7 +51,7 @@ class PantryServices extends Services {
         },
         {
           model: User,
-          as: "userPantry",
+          as: "users",
           attributes: {
             exclude: [
               "password",
@@ -72,7 +77,6 @@ class PantryServices extends Services {
   //Post
 
   async createPantryAndShoppingList(data: dataPost, t?: Transaction) {
-    console.log(data.userId);
     if (!data.userId) {
       throw new BadRequest("O estoque precisa de um dono");
     }
@@ -95,7 +99,7 @@ class PantryServices extends Services {
       });
 
       if (!created) {
-        throw new BaseError("Já existe um estoque com esse nome.");
+        throw new Conflict("Já existe um estoque com esse nome.");
       }
 
       await PantryUsers.create(
@@ -109,7 +113,6 @@ class PantryServices extends Services {
       await ShoppingList.create(
         {
           pantryId: pantry.id,
-          userId: data.userId,
         },
         { transaction },
       );
@@ -124,14 +127,12 @@ class PantryServices extends Services {
     return sequelize.transaction(execute);
   }
   //Update
-  async updatePantry(
-    data: dataUpdate,
-    id: number,
-    userId: number,
-    creatorId: number,
-  ) {
+  async updatePantry(data: dataUpdate, id: number, userId: number) {
     if (data) {
-      if (userId === Number(creatorId)) {
+      const creatorId = await Pantry.findOne({
+        where: { id: id, userId: userId },
+      });
+      if (userId === Number(creatorId?.dataValues.userId)) {
         const allNames = await Pantry.findOne({
           where: { userId: userId, name: data.name },
         });
@@ -150,37 +151,24 @@ class PantryServices extends Services {
 
   //Delete
 
-  async deletePantry(pantryId: number, creatorId: number, userId: number) {
-    const response = await PantryUsers.findAll({
-      where: { pantryId: pantryId },
+  async deletePantry(id: number, userId: number) {
+    const howMany = await Pantry.findAndCountAll({ where: { userId: userId } });
+    const creatorId = await Pantry.findOne({
+      where: { id: id, userId: userId },
     });
-    const canDestroy = await Promise.all(
-      response.map(async (pantryUser) => {
-        return await Pantry.count({
-          where: { userId: pantryUser.userId },
+    if (creatorId) {
+      if (howMany.count > 1) {
+        const apagado = await Pantry.destroy({
+          where: { id },
         });
-      }),
-    );
-    if (!canDestroy.includes(1)) {
-      if (Number(creatorId) === userId) {
-        await sequelize.transaction(async (t) => {
-          PantryIngredient.destroy({
-            where: { pantryId: pantryId },
-            transaction: t,
-          });
 
-          Pantry.destroy({
-            where: { id: pantryId },
-            transaction: t,
-          });
-        });
-        return true;
-      }
-      throw new Forbidden("Você só pode apagar os seus estoques...");
+        return apagado;
+      } else
+        throw new BadRequest(
+          "Você só pode apagar um estoque se você participa de mais de um.",
+        );
     }
-    throw new BadRequest(
-      "Alguém(ou você) só tem um estoque registrado na plataforma... assim sendo impossível excluir esse!",
-    );
+    throw new Forbidden("Você só pode deletar os seus próprios estoques!");
   }
 }
 

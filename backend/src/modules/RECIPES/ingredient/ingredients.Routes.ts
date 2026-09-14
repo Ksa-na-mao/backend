@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 
-import verifyAccount from "../../../core/jwt/verifyAccount";
-import IngredientController from "./IngredientController";
+import verifyAccount from "@verifyAccount";
+import IngredientController from "./Ingredient.Controller";
 
 const ingredientController = new IngredientController();
 
@@ -22,14 +22,14 @@ Router.post(
 );
 
 Router.patch(
-  "/ingredients/update",
+  "/ingredients/update/:id",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
-    ingredientController.update(req, res, next),
+    ingredientController.updateIngredient(req, res, next),
 );
 
 Router.delete(
-  "/ingredients/delete",
+  "/ingredients/delete/:id",
   verifyAccount,
   (req: Request, res: Response, next: NextFunction) =>
     ingredientController.delete(req, res, next),

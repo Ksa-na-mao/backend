@@ -1,7 +1,7 @@
 import BaseError from "./BaseError";
 
 class BadRequest extends BaseError {
-  constructor(message: string, status?: Number) {
+  constructor(message: string) {
     super(
       message || "O servidor não sabe o que fazer com isso... desculpa! :(",
       400,
