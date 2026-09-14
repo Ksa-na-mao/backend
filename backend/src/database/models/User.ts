@@ -11,6 +11,7 @@ class User extends Model {
   declare bio: string;
   declare pfp: string;
   declare role: string;
+  declare username: string;
 
   static associate(models: DatabaseModels) {
     User.hasMany(models.Notification, {
@@ -122,8 +123,10 @@ export default (sequelize: Sequelize) => {
       sequelize,
       modelName: "User",
       hooks: {
-        beforeCreate: async (user) => {
-          user.password = await bcrypt.hash(user.password, 12);
+        beforeSave: async (user) => {
+          if (user.changed("password")) {
+            user.password = await bcrypt.hash(user.password, 12);
+          }
         },
       },
       paranoid: true,

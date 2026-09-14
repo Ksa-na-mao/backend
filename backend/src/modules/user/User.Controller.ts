@@ -1,5 +1,5 @@
 import Controller from "@Controller";
-import UserServices from "./User.Services";
+import UserServices from "./User.Service";
 import { Request, Response, NextFunction } from "express";
 import BadRequest from "@/core/Errors/BadRequest";
 
@@ -69,9 +69,79 @@ class UserController extends Controller {
   async updateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const data = req.body;
-      const userEmail = req.user.userEmail;
-      await userServices.updateAccount(data, userEmail);
-      res.status(201).json("Conta atualizada com sucesso!");
+      const userId = Number(req.user.userId);
+      const userRole = req.user.role;
+      const response = await userServices.updateAccount(data, userId, userRole);
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updatePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { password, newPassword } = req.body;
+      const userId = Number(req.user!.userId);
+      const response = await userServices.updatePassword(
+        password,
+        userId,
+        newPassword,
+      );
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async sendTokenEmail(req: Request, res: Response, next: NextFunction) {
+    return this.emailController(req, res, next, 1);
+  }
+
+  async sendTokenPassword(req: Request, res: Response, next: NextFunction) {
+    return this.emailController(req, res, next, 2);
+  }
+
+  async emailController(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    type: number,
+  ) {
+    try {
+      const userId = Number(req.user!.userId);
+      const response = await userServices.sendEmail(userId, type);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateEmail(req: Request, res: Response, next: NextFunction) {
+    const email = req.body;
+    this.forgotPasswordOrUpdateEmail(req, res, next, email);
+  }
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    const password = req.body;
+    this.forgotPasswordOrUpdateEmail(req, res, next, password);
+  }
+
+  async forgotPasswordOrUpdateEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    data: { password: string } | { email: string },
+  ) {
+    try {
+      const userId = Number(req.user!.userId);
+      const { token } = req.query;
+      const tokenString = String(token);
+      const response = await userServices.updateEmailOrPassword(
+        userId,
+        data,
+        tokenString,
+      );
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
@@ -81,8 +151,8 @@ class UserController extends Controller {
   async deactivateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const email = req.body.email;
-      const userEmail = req.user!.userEmail;
-      await userServices.deactivateAccount(email, userEmail);
+      const id = Number(req.user.userId);
+      await userServices.deactivateAccount(email, id);
       res.status(201).json("Conta desativada!");
     } catch (error) {
       next(error);
