@@ -1,4 +1,4 @@
-import Services from "@Services";
+import Services from "@/core/Services/Services";
 import dataSource from "@models/index.js";
 import { RecipeIngredientPost } from "@Types/recipeIngredient/recipeIngredient.ts";
 import BadRequest from "@Errors/BadRequest.ts";

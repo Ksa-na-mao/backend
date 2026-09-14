@@ -1,4 +1,4 @@
-import Services from "@Services";
+import Services from "@/core/Services/Services";
 import dataSource from "@models/index.ts";
 import BadRequest from "@Errors/BadRequest";
 import Forbidden from "@Errors/Forbidden";

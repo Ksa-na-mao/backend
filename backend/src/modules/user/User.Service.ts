@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Op } from "sequelize";
 
-import Services from "@Services";
+import Services from "@/core/Services/Services.ts";
 
 import auth from "../../core/jwt/jwt.ts";
 import BrevoService from "@/core/APIs/brevo/Brevo.Service.ts";
@@ -12,7 +12,7 @@ import Error404 from "@Errors/Error404.js";
 import Unauthorized from "@/core/Errors/Unauthorized.ts";
 import BaseError from "@/core/Errors/BaseError.ts";
 
-import PantryServices from "../PANTRY/pantry/Pantry.Services.js";
+import PantryServices from "../PANTRY/pantry/Pantry.Service.js";
 
 import dataSource from "@models/index.js";
 
