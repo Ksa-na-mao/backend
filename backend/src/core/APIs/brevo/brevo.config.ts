@@ -128,4 +128,51 @@ async function forgotPassword(
   );
 }
 
-export { updateEmail, forgotPassword };
+async function inviteForPantry(
+  userEmail: string,
+  userName: string,
+  inviterName: string,
+) {
+  const confirmUrl = `http://localhost:3000/pantry/invites`;
+
+  await sendEmail(
+    userEmail,
+    userName,
+    "Você recebeu um convite para uma Pantry",
+    `
+      <html>
+        <body>
+          <h2>Olá, ${userName}!</h2>
+
+          <p>
+            <strong>${inviterName}</strong> convidou você para participar de ume estoque no Ksa na mão.
+          </p>
+
+          <a
+            href="${confirmUrl}"
+            style="
+              display: inline-block;
+              padding: 12px 20px;
+              background-color: #000;
+              color: #fff;
+              text-decoration: none;
+              border-radius: 6px;
+            "
+          >
+            Ver convite
+          </a>
+
+          <p>
+            Acesse seus convites para aceitar ou recusar.
+          </p>
+
+          <p>
+            Equipe Ksa na mão
+          </p>
+        </body>
+      </html>
+    `,
+  );
+}
+
+export { updateEmail, forgotPassword, inviteForPantry };

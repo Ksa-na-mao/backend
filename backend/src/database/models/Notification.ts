@@ -1,13 +1,14 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from ".";
 
 class Notification extends Model {
-  static associate(models: any) {
+  static associate(models: DatabaseModels) {
     Notification.belongsTo(models.User, {
       foreignKey: "userId",
       as: "user",
     });
     Notification.belongsTo(models.User, {
-      foreignKey: "actorUserId",
+      foreignKey: "actorId",
       as: "actor",
     });
     Notification.belongsTo(models.Recipe, {
@@ -21,17 +22,21 @@ export default (sequelize: Sequelize) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        references: { model: "Users", key: "user" },
+        references: { model: "Users", key: "id" },
       },
       actorId: {
         type: DataTypes.INTEGER,
-        references: { model: "Users", key: "actor" },
+        references: { model: "Users", key: "id" },
       },
       recipeId: {
         type: DataTypes.INTEGER,
         references: { model: "Recipes", key: "recepie" },
       },
-      type: { type: DataTypes.STRING, allowNull: false },
+      type: {
+        type: DataTypes.ENUM("invite", "social", "alert"),
+        allowNull: false,
+      },
+      message: { type: DataTypes.STRING, allowNull: false },
       isSeen: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
@@ -42,6 +47,5 @@ export default (sequelize: Sequelize) => {
       modelName: "Notification",
     },
   );
-
   return Notification;
 };

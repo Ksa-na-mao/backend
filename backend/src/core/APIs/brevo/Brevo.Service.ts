@@ -1,27 +1,44 @@
 /* eslint-disable indent */
 import EmailChangeTokenService from "@/modules/user/Email/EmailChangeToken.service.ts";
 const emailChangeTokenService = new EmailChangeTokenService();
-import { updateEmail, forgotPassword } from "./brevo.config.ts";
+import {
+  updateEmail,
+  forgotPassword,
+  inviteForPantry,
+} from "./brevo.config.ts";
 
 class BrevoService {
   async sendEmail(
     userEmail: string,
     userName: string,
     userId: number,
-    type: number,
+    type: string,
+    inviterName?: string,
   ) {
-    const token = await emailChangeTokenService.uniqueToken(userId, userEmail);
-    try {
-      switch (type) {
-        case 1:
-          await updateEmail(userEmail, userName, token);
-          break;
-        case 2:
-          await forgotPassword(userEmail, userName, token);
-          break;
+    switch (type) {
+      case "updateEmail": {
+        const token = await emailChangeTokenService.uniqueToken(
+          userId,
+          userEmail,
+        );
+
+        await updateEmail(userEmail, userName, token);
+        break;
       }
-    } catch (error) {
-      throw error;
+
+      case "forgotPassword": {
+        const token = await emailChangeTokenService.uniqueToken(
+          userId,
+          userEmail,
+        );
+
+        await forgotPassword(userEmail, userName, token);
+        break;
+      }
+
+      case "pantryInvite":
+        await inviteForPantry(userEmail, userName, inviterName!);
+        break;
     }
   }
 }

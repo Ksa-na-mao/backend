@@ -57,6 +57,24 @@ class PantryController extends Controller {
     }
   }
 
+  async invite(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { invitedId, pantryId } = req.params;
+      const invitedIdNumber = Number(invitedId);
+      const pantryIdNumber = Number(pantryId);
+      const userId = req.user!.userId;
+      const response = await pantryServices.inviteSomeone(
+        userId,
+        invitedIdNumber,
+        pantryIdNumber,
+      );
+      res.status(201).json(response);
+    } catch (error) {
+      console.log("teve next");
+      next(error);
+    }
+  }
+
   //Patch
   async update(req: Request, res: Response, next: NextFunction) {
     try {
