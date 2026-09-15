@@ -15,6 +15,7 @@ import PreparationHistory from "./preparationhistory";
 import Notification from "./Notification";
 import Like from "./Like";
 import UserChangeToken from "./UserChangeToken";
+import pantryInvite from "./pantryInvite";
 
 const database =
   process.env.NODE_ENV === "test"
@@ -45,6 +46,7 @@ const NotificationModel = Notification(sequelize);
 const LikeModel = Like(sequelize);
 const UserModel = User(sequelize);
 const UserChangeTokenModel = UserChangeToken(sequelize);
+const PantryInviteModel = pantryInvite(sequelize);
 
 const db = {
   Comment: CommentModel,
@@ -62,6 +64,7 @@ const db = {
   Like: LikeModel,
   User: UserModel,
   UserChangeToken: UserChangeTokenModel,
+  PantryInvite: PantryInviteModel,
 };
 
 export type ModelName = keyof typeof db;

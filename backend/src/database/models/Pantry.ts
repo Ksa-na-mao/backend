@@ -23,6 +23,11 @@ class Pantry extends Model {
       as: "allShoppingListItems",
     });
 
+    Pantry.hasMany(models.PantryInvite, {
+      foreignKey: "pantryId",
+      as: "allInvites",
+    });
+
     Pantry.hasOne(models.ShoppingList, {
       foreignKey: "pantryId",
       as: "PantrysShopping",

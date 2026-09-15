@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Controller from "@Controller";
-import IngredientServices from "./Ingredient.Services";
+import IngredientServices from "./Ingredient.Service";
 import BaseError from "@Errors/BaseError";
 
 const ingredientServices = new IngredientServices();
