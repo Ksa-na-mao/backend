@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import auth from "@Core/jwt/jwt.ts";
 
-import PantryServices from "../../PANTRY/pantry/Pantry.Services.ts";
+import PantryServices from "../../PANTRY/pantry/Pantry.Service.ts";
 import Services from "@/core/Services/Services.ts";
 
 import BadRequest from "@Errors/BadRequest.js";
