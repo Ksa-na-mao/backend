@@ -7,10 +7,12 @@
     "paths": {
       "@/*": ["./src/*"],
       "@models/*": ["./src/database/models/*"],
+      "@Core": ["./src/core/*"],
       "@Controller": ["./src/core/Controller/Controller.ts"],
       "@Services": ["./src/core/Services/Services.ts"],
       "@Errors/*": ["./src/core/Errors/*"],
       "@Types/*": ["./src/core/types/*"],
+      "@Modules/*": ["./src/modules/*"],
 
       "@verifyAccount": ["./src/core/jwt/verifyAccount.ts"],
       "@verifyAdmin": ["./src/core/jwt/verifyAdmin.ts"]
