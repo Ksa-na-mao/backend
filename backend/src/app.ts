@@ -1,7 +1,7 @@
 import express from "express";
-import mainRoutes from "./core/routes/Routes.js";
-import ErrorHandler from "./core/Errors/1ErrorHandler.js";
-import Error404Middleware from "./core/Errors/Error404Middleware.js";
+import mainRoutes from "./core/routes/Routes.ts";
+import ErrorHandler from "./core/Errors/1ErrorHandler.ts";
+import Error404Middleware from "./core/Errors/Error404Middleware.ts";
 
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger/swagger.js";
