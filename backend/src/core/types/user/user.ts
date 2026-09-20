@@ -4,6 +4,12 @@ export interface SignUpData {
   username: string;
 }
 
+export interface userInfos {
+  username: string;
+  name: string;
+  email: string;
+}
+
 export interface updateData {
   id: number;
   name: string;

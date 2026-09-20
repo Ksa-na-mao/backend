@@ -20,7 +20,7 @@ class User extends Model {
     });
 
     User.hasMany(models.Notification, {
-      foreignKey: "actorUserId",
+      foreignKey: "actorId",
       as: "actorUserId",
     });
 
@@ -62,6 +62,14 @@ class User extends Model {
       as: "followers",
       foreignKey: "followingId",
       otherKey: "followerId",
+    });
+    User.hasMany(models.PantryInvite, {
+      foreignKey: "inviterId",
+      as: "sent",
+    });
+    User.hasMany(models.PantryInvite, {
+      foreignKey: "invitedId",
+      as: "received",
     });
   }
 }

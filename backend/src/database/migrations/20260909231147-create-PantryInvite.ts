@@ -1,40 +1,53 @@
 import { DataTypes, QueryInterface } from "sequelize";
+
 export default {
   async up(queryInterface: QueryInterface) {
-    await queryInterface.createTable("Notifications", {
+    await queryInterface.createTable("PantryInvites", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      userId: {
+
+      invitedId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
       },
-      actorId: {
+
+      inviterId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
       },
-      recipeId: {
+
+      pantryId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
       },
-      isSeen: {
-        type: DataTypes.BOOLEAN,
+
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
+
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
       },
+
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
       },
+
       deletedAt: {
         allowNull: true,
         type: DataTypes.DATE,
       },
     });
   },
+
   async down(queryInterface: QueryInterface) {
-    await queryInterface.dropTable("Notifications");
+    await queryInterface.dropTable("PantryInvites");
   },
 };

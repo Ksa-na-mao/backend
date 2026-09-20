@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Controller from "@Controller";
-import PantryIngredientServices from "./PantryIngredients.Services";
+import PantryIngredientServices from "./PantryIngredients.Service";
 const pantryIngredientServices = new PantryIngredientServices();
 
 class PantryIngredientController extends Controller {
