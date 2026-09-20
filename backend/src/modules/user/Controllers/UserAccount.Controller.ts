@@ -14,12 +14,10 @@ class UserAccountController extends Controller {
   async updateAccount(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = Number(req.user!.userId);
-      const userRole = req.user!.role;
 
       const response = await userAccountServices.updateAccount(
         req.body,
         userId,
-        userRole,
       );
 
       res.status(200).json(response);

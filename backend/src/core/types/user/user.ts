@@ -9,7 +9,6 @@ export interface updateData {
   name: string;
   bio: string;
   pfp: string;
-  role: string;
   username: string;
 }
 

@@ -26,11 +26,7 @@ class UserAccountServices extends Services {
     super("User");
   }
 
-  async updateAccount(data: updateData, userId: number, userRole: string) {
-    if (data.role !== "user" && userRole !== "admin") {
-      throw new Forbidden("Você não é admin, espertinho.");
-    }
-
+  async updateAccount(data: updateData, userId: number) {
     const user = await userModel.findOne({
       where: { id: userId },
     });

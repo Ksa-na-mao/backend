@@ -1,16 +1,12 @@
 import bcrypt from "bcrypt";
-
-import Services from "@/core/Services/Services.ts";
-
 import auth from "@Core/jwt/jwt.ts";
 
-import BadRequest from "@Errors/BadRequest.js";
-
-import Error404 from "@Errors/Error404.js";
-
-import Unauthorized from "@/core/Errors/Unauthorized.ts";
-
 import PantryServices from "../../PANTRY/pantry/Pantry.Services.ts";
+import Services from "@/core/Services/Services.ts";
+
+import BadRequest from "@Errors/BadRequest.js";
+import Error404 from "@Errors/Error404.js";
+import Unauthorized from "@/core/Errors/Unauthorized.ts";
 
 import dataSource from "@models/index.js";
 
@@ -74,15 +70,11 @@ class UserAuthServices extends Services {
       },
     });
 
-    if (!user) {
-      throw new Error404("Usuário não encontrado!");
-    }
+    if (!user) throw new Error404("Usuário não encontrado!");
 
     const match = await bcrypt.compare(userData.password, user.password);
 
-    if (!match) {
-      throw new Unauthorized("Senha incorreta!");
-    }
+    if (!match) throw new Unauthorized("Senha incorreta!");
 
     const token = auth(user);
 

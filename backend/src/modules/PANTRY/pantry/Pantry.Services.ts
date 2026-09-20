@@ -4,6 +4,9 @@ import BadRequest from "@Errors/BadRequest.ts";
 import Forbidden from "@Errors/Forbidden.ts";
 import BaseError from "@Errors/BaseError.ts";
 
+import ShoppingServices from "@/modules/SHOPPING/ShoppingList/Shopping.Services";
+const shoppingListServices = new ShoppingServices();
+
 import { dataUpdate, dataPost } from "@Types/pantry/pantry.ts";
 import { Transaction } from "sequelize";
 
@@ -106,22 +109,19 @@ class PantryServices extends Services {
         { transaction },
       );
 
-      await ShoppingList.create(
-        {
-          pantryId: pantry.id,
-        },
-        { transaction },
-      );
-
       return pantry;
     };
 
     if (t) {
-      return execute(t);
+      const pantry = await execute(t);
+      await shoppingListServices.createShoppingList(pantry.id, t);
     }
 
-    return sequelize.transaction(execute);
+    const pantry = await sequelize.transaction(execute);
+    await shoppingListServices.createShoppingList(pantry.id, t);
+    return pantry;
   }
+
   //Update
   async updatePantry(data: dataUpdate, id: number, userId: number) {
     if (data) {
@@ -156,7 +156,6 @@ class PantryServices extends Services {
         where: { id },
       });
 
-      console.log(apagado);
       return apagado;
     }
     throw new Forbidden("Você só pode deletar os seus próprios estoques!");
