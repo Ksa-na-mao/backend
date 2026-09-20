@@ -1,17 +1,25 @@
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
+
 import BaseError from "./BaseError";
+import ValidationErrorClass from "./ValidationError";
+import { ValidationError } from "sequelize";
 
 function ErrorHandler(
-  error: typeof BaseError,
+  error: Error,
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
   if (error instanceof BaseError) {
-    res.status(error.status).json({ message: error.message });
+    res.status(error.status).json({
+      message: error.message,
+    });
+  } else if (error instanceof ValidationError) {
+    new ValidationErrorClass(error).response(res);
   } else {
-    console.log(error);
-    res.status(500).json("erro imprevisto!");
+    res.status(500).json({
+      message: "Erro imprevisto!",
+    });
   }
 }
 
