@@ -3,6 +3,9 @@ import dataSource from "@models/index.ts";
 import BadRequest from "@Errors/BadRequest.ts";
 import Forbidden from "@Errors/Forbidden.ts";
 
+import ShoppingServices from "@Modules/SHOPPING/ShoppingList/Shopping.Service.ts";
+const shoppingListServices = new ShoppingServices();
+
 import { dataUpdate, dataPost } from "@Types/pantry/pantry.ts";
 import { Transaction } from "sequelize";
 import Conflict from "@/core/Errors/Conflict";
@@ -113,21 +116,17 @@ class PantryServices extends Services {
         { transaction },
       );
 
-      await ShoppingList.create(
-        {
-          pantryId: pantry.id,
-        },
-        { transaction },
-      );
-
       return pantry;
     };
 
     if (t) {
-      return execute(t);
+      const pantry = await execute(t);
+      await shoppingListServices.createShoppingList(pantry.id, t);
     }
 
-    return sequelize.transaction(execute);
+    const pantry = await sequelize.transaction(execute);
+    await shoppingListServices.createShoppingList(pantry.id, t);
+    return pantry;
   }
 
   async inviteSomeone(inviterId: number, invitedId: number, pantryId: number) {
