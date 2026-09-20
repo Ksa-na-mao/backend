@@ -2,13 +2,13 @@ import Services from "@Services";
 import dataSource from "@models/index.ts";
 import BadRequest from "@Errors/BadRequest.ts";
 import Forbidden from "@Errors/Forbidden.ts";
-import BaseError from "@Errors/BaseError.ts";
 
 import ShoppingServices from "@/modules/SHOPPING/ShoppingList/Shopping.Services";
 const shoppingListServices = new ShoppingServices();
 
 import { dataUpdate, dataPost } from "@Types/pantry/pantry.ts";
 import { Transaction } from "sequelize";
+import Conflict from "@/core/Errors/Conflict";
 
 const sequelize = dataSource.sequelize;
 
@@ -24,8 +24,12 @@ class PantryServices extends Services {
   }
 
   //Get
-  async getMyPantries(userId: number) {
-    const response = await Pantry.findAll({ where: { userId: userId } });
+  async getMyPantries(userId: number, offset: number, limit: number) {
+    const response = await Pantry.findAll({
+      where: { userId: userId },
+      limit,
+      offset,
+    });
     return response;
   }
 
@@ -98,7 +102,7 @@ class PantryServices extends Services {
       });
 
       if (!created) {
-        throw new BaseError("Já existe um estoque com esse nome.");
+        throw new Conflict("Já existe um estoque com esse nome.");
       }
 
       await PantryUsers.create(
@@ -115,6 +119,7 @@ class PantryServices extends Services {
     if (t) {
       const pantry = await execute(t);
       await shoppingListServices.createShoppingList(pantry.id, t);
+      return pantry;
     }
 
     const pantry = await sequelize.transaction(execute);
@@ -148,18 +153,20 @@ class PantryServices extends Services {
   //Delete
 
   async deletePantry(id: number, userId: number) {
+    const howMany = await Pantry.findAndCountAll({ where: { userId: userId } });
     const creatorId = await Pantry.findOne({
       where: { id: id, userId: userId },
     });
     if (creatorId) {
-      const apagado = await Pantry.destroy({
-        where: { id },
-      });
+      if (howMany.count > 1) {
+        const apagado = await Pantry.destroy({
+          where: { id },
+        });
 
-      return apagado;
+        return apagado;
+      }
+      throw new Forbidden("Você só pode deletar os seus próprios estoques!");
     }
-    throw new Forbidden("Você só pode deletar os seus próprios estoques!");
   }
 }
-
 export default PantryServices;

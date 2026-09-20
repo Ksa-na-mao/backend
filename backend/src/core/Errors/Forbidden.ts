@@ -1,8 +1,7 @@
 import BaseError from "./BaseError.ts";
 
-//check
 class Forbidden extends BaseError {
-  constructor(message?: string, status?: number) {
+  constructor(message?: string) {
     super(message || "Proibido, parça.", 403);
   }
 }

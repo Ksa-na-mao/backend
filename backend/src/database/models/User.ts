@@ -35,7 +35,7 @@ class User extends Model {
     });
 
     User.belongsToMany(models.Pantry, {
-      through: "PantryUser",
+      through: models.PantryUser,
       foreignKey: "userId",
       otherKey: "pantryId",
       as: "pantries",
