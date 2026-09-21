@@ -1,8 +1,8 @@
 import BaseError from "./BaseError";
 
-class Forbidden extends BaseError {
+class Error404 extends BaseError {
   constructor(message: string) {
     super(message || "Recurso não encontrado.", 404);
   }
 }
-export default Forbidden;
+export default Error404;

@@ -64,6 +64,7 @@ class UserAccountServices extends Services {
 
       const response = await userModel.update(realData, {
         where: { id: userId },
+        individualHooks: true,
       });
 
       if (response) return { message: "Conta alterada com sucesso" };
@@ -95,6 +96,7 @@ class UserAccountServices extends Services {
         { password: newPassword },
         {
           where: { id: userId },
+          individualHooks: true,
         },
       );
 
@@ -235,9 +237,14 @@ class UserAccountServices extends Services {
     const email = user.email;
 
     if (type === 1) {
-      await brevoService.sendEmail(email, user.username, userId, 1);
+      await brevoService.sendEmail(email, user.username, userId, "updateEmail");
     } else if (type === 2) {
-      await brevoService.sendEmail(email, user.username, userId, 2);
+      await brevoService.sendEmail(
+        email,
+        user.username,
+        userId,
+        "forgotPassword",
+      );
     }
 
     return {

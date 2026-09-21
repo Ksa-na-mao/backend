@@ -2,10 +2,11 @@ import test, { before, after, describe } from "node:test";
 import request from "supertest";
 import assert from "node:assert";
 
-import app from "../../app.ts";
+import app from "../../../app.ts";
 import db from "@models/index.ts";
 
-import { clearDatabase } from "../helper/clearDatabase.ts";
+import { clearDatabase } from "../../helper/clearDatabase.ts";
+import createUser from "@/test/helper/createUser.ts";
 
 let token: string;
 
@@ -13,14 +14,7 @@ describe("Busca os usuarios por username", () => {
   before(async () => {
     await clearDatabase();
 
-    const response = await request(app)
-      .post("/register")
-      .send({
-        username: "Migus",
-        email: "miguelnewemail@gmail.com",
-        password: "senha123@",
-      })
-      .expect(201);
+    const response = await createUser(request(app), {});
     token = response.body;
   });
 
@@ -29,6 +23,13 @@ describe("Busca os usuarios por username", () => {
       .get("/users?username=Migus")
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
+  });
+
+  test("campo vazio", async () => {
+    await request(app)
+      .get("/users")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
   });
 
   test("Busca um user que não existe", async () => {

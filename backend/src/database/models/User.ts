@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import goodPassword from "../../modules/user/helper/goodPassword.ts";
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { DatabaseModels } from "./index.ts";
+import BadRequest from "@/core/Errors/BadRequest.ts";
 
 class User extends Model {
   declare id: number;
@@ -83,7 +84,7 @@ export default (sequelize: Sequelize) => {
         validate: {
           len: {
             args: [3, 100],
-            msg: "O nome deve ter entre 3 e 100 caracteres",
+            msg: "O username deve ter entre 3 e 100 caracteres",
           },
           notEmpty: true,
           noSpaces(value: string) {
@@ -123,7 +124,6 @@ export default (sequelize: Sequelize) => {
             args: [8, 100],
             msg: "A senha deve ter entre 8 e 100 caracteres",
           },
-          goodPassword: (password: string) => goodPassword(password),
         },
       },
       bio: DataTypes.STRING,
@@ -140,7 +140,41 @@ export default (sequelize: Sequelize) => {
       hooks: {
         beforeSave: async (user) => {
           if (user.changed("password")) {
+            goodPassword(user.password);
+
+            if (user.password.length < 8 || user.password.length > 100) {
+              throw new BadRequest("A senha deve ter entre 8 e 100 caracteres");
+            }
+
             user.password = await bcrypt.hash(user.password, 12);
+          }
+
+          if (user.changed("username")) {
+            if (/\s/.test(user.username)) {
+              throw new Error("O nome de usuário não pode conter espaços");
+            }
+
+            if (user.username.length <= 2) {
+              throw new BadRequest(
+                "O username precisa ter pelo menos 3 caracteres",
+              );
+            }
+          }
+
+          if (user.changed("name")) {
+            if (user.name.length > 50) {
+              throw new BadRequest(
+                "O nome precisa ter no maximo 50 caracteres",
+              );
+            }
+          }
+
+          if (user.changed("bio")) {
+            if (user.bio.length > 500) {
+              throw new BadRequest(
+                "A bio precisa ter no maximo 500 caracteres",
+              );
+            }
           }
         },
       },

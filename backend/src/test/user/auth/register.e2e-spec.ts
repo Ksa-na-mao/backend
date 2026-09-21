@@ -1,8 +1,10 @@
 import test, { before, after, describe } from "node:test";
 import request from "supertest";
+import assert from "node:assert";
+
 import app from "../../../app.ts";
 import db from "@models/index.ts";
-import assert from "node:assert";
+
 import { clearDatabase } from "../../helper/clearDatabase.ts";
 
 function registerTestPassword(
@@ -16,7 +18,7 @@ function registerTestPassword(
     username?: string;
     email?: string;
     password: string;
-    expected: string | string[];
+    expected: string;
   },
 ) {
   test(title, async () => {
@@ -29,11 +31,10 @@ function registerTestPassword(
       })
       .expect(400);
 
-    const expectedMessages = Array.isArray(expected) ? expected : [expected];
-
-    expectedMessages.forEach((message, index) => {
-      assert.strictEqual(response.body.message[index].message, message);
-    });
+    assert.strictEqual(
+      response.body.message?.[0]?.message ?? response.body.message,
+      expected,
+    );
   });
 }
 
@@ -114,14 +115,11 @@ describe("Cria conta", () => {
 
   registerTestPassword("senha invalida e muito curta", {
     password: "a2",
-    expected: [
-      "Senha precisa ter pelo menos um número e um caractere especial!",
-      "A senha deve ter entre 8 e 100 caracteres",
-    ],
+    expected: "A senha deve ter entre 8 e 100 caracteres",
   });
+});
 
-  after(async () => {
-    await clearDatabase();
-    await db.sequelize.close();
-  });
+after(async () => {
+  await clearDatabase();
+  await db.sequelize.close();
 });

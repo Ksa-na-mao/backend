@@ -62,6 +62,8 @@ class UserServices extends Services {
       },
     });
 
+    if (!user) throw new Error404("Esse usuário não existe!");
+
     return user;
   }
 }
