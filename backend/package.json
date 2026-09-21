@@ -7,7 +7,8 @@
   "scripts": {
     "start": "tsx server.ts",
     "dev": "cross-env NODE_ENV=development nodemon --exec tsx server.ts",
-    "test": "cross-env NODE_ENV=test vitest"
+    "test": "cross-env NODE_ENV=test vitest",
+    "test:e2e": "node --env-file=.env.test --import tsx --test --test-concurrency=1 \"src/test/**/*.e2e-spec.ts\""
   },
   "dependencies": {
     "@getbrevo/brevo": "^6.0.3",
@@ -20,6 +21,7 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.8",
     "sequelize-cli": "^6.6.5",
+    "supertest": "^7.2.2",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
   },
@@ -28,6 +30,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/supertest": "^7.2.1",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "cross-env": "^10.1.0",

@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import Services from "@/core/Services/Services.ts";
 
 import dataSource from "@models/index.js";
+import Error404 from "@/core/Errors/Error404.ts";
 
 const userModel = dataSource.User;
 
@@ -47,6 +48,9 @@ class UserServices extends Services {
       offset,
       limit,
     });
+
+    if (users.length === 0)
+      throw new Error404("Não existem usuários com esses filtros");
 
     return users;
   }

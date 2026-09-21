@@ -98,12 +98,19 @@ export default (sequelize: Sequelize) => {
         allowNull: true,
       },
       email: {
-        unique: true,
+        unique: {
+          name: "unique",
+          msg: "Este email já está sendo usado.",
+        },
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          notEmpty: true,
-          isEmail: true,
+          notEmpty: {
+            msg: "O email é obrigatório.",
+          },
+          isEmail: {
+            msg: "Informe um email válido.",
+          },
         },
       },
       password: {

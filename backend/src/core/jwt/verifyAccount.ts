@@ -6,6 +6,7 @@ import Forbidden from "../Errors/Forbidden.ts";
 const userServices = new UserServices();
 
 async function verifyAccount(req: Request, res: Response, next: NextFunction) {
+  console.log("🔥 ENTROU NO AUTH");
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) {
     return next(new Unauthorized());
@@ -18,6 +19,8 @@ async function verifyAccount(req: Request, res: Response, next: NextFunction) {
     if (active) next();
     else throw new Forbidden("Sua conta está desativada.");
   } catch (error) {
+    console.log("🔥 ABORTA");
+    console.log(error);
     next(error);
   }
 }

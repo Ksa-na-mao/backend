@@ -40,7 +40,6 @@ class UserController extends Controller {
       if (limit >= 30 || limit <= 0) {
         limit = 10;
       }
-
       const users = await userServices.getUsersByUsername(where, offset, limit);
 
       res.status(200).json(users);
