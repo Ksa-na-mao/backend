@@ -2,9 +2,11 @@ import express from "express";
 
 import verifyAccount from "@verifyAccount";
 
-import PantryController from "./Pantry.Controller";
+import PantryController from "./Controller/Pantry.Controller";
+import PantryInviteController from "./Controller/PantryInvite.Controller";
 
 const pantryController = new PantryController();
+const pantryInviteController = new PantryInviteController();
 
 const Router = express.Router();
 
@@ -23,7 +25,7 @@ Router.post("/pantry/post", verifyAccount, (req, res, next) =>
 Router.post(
   "/pantry/invite/:invitedId/:pantryId",
   verifyAccount,
-  (req, res, next) => pantryController.invite(req, res, next),
+  (req, res, next) => pantryInviteController.invite(req, res, next),
 );
 
 Router.patch("/pantry/update/:id", verifyAccount, (req, res, next) =>
