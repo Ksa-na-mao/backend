@@ -23,10 +23,13 @@ class PantryInviteServices extends Services {
       throw new BadRequest("Você não pode se convidar.");
 
     const isInviterAllowed = await Pantry.findOne({
-      where: { userId: inviterId },
+      where: {
+        id: pantryId,
+        userId: inviterId,
+      },
     });
 
-    if (isInviterAllowed?.dataValues.userId !== inviterId) {
+    if (!isInviterAllowed) {
       throw new Forbidden("Você não é o dono desse estoque");
     }
 
@@ -46,13 +49,14 @@ class PantryInviteServices extends Services {
         {
           model: User,
           foreignKey: "userId",
+          attributes: ["username"],
         },
       ],
     });
 
     if (pantryUser) {
       throw new BadRequest(
-        `O usuário ${pantryUser!.user!.username} já está no estoque!`,
+        `O usuário ${pantryUser.User!.username} já está no estoque!`,
       );
     } else {
       const isAlreadyInvited = await PantryInvite.findOne({
@@ -73,7 +77,7 @@ class PantryInviteServices extends Services {
 
       if (isAlreadyInvited) {
         throw new BadRequest(
-          `O usuário ${isAlreadyInvited!.user!.username} já está convidado para o estoque!`,
+          `O usuário ${isAlreadyInvited!.User!.username} já está convidado para o estoque!`,
         );
       } else {
         const okTransaction = await sequelize.transaction(async (t) => {

@@ -85,11 +85,7 @@ class PantryServices extends Services {
   //Post
 
   async createPantryAndShoppingList(data: dataPost, t?: Transaction) {
-    if (!data.userId) {
-      throw new BadRequest("O estoque precisa de um dono");
-    }
-
-    if (!data.name) {
+    if (!data.name.trim()) {
       throw new BadRequest("O estoque precisa de um nome");
     }
 
@@ -99,12 +95,10 @@ class PantryServices extends Services {
           name: data.name,
           userId: data.userId,
         },
-
         defaults: {
           userId: data.userId,
           name: data.name,
         },
-
         transaction,
       });
 
@@ -120,24 +114,22 @@ class PantryServices extends Services {
         { transaction },
       );
 
+      await shoppingListServices.createShoppingList(pantry.id, transaction);
+
       return pantry;
     };
 
     if (t) {
-      const pantry = await execute(t);
-      await shoppingListServices.createShoppingList(pantry.id, t);
-      return pantry;
+      return await execute(t);
     }
 
-    const pantry = await sequelize.transaction(execute);
-    await shoppingListServices.createShoppingList(pantry.id, t);
-    return pantry;
+    return sequelize.transaction(execute);
   }
 
   //Update
 
   async updatePantry(data: dataUpdate, id: number, userId: number) {
-    if (data) {
+    if (data.name.trim()) {
       const creatorId = await Pantry.findOne({
         where: { id: id, userId: userId },
       });
@@ -158,7 +150,7 @@ class PantryServices extends Services {
           return update;
         }
 
-        throw new BadRequest("Você já tem um estoque com esse nome!");
+        throw new Conflict("Você já tem um estoque com esse nome.");
       } else {
         throw new Forbidden("Você só pode atualizar as suas próprias coisas!");
       }
@@ -190,7 +182,7 @@ class PantryServices extends Services {
         throw new BadRequest(
           "Você só pode apagar um estoque se você participa de mais de um.",
         );
-    }
+    } else throw new Forbidden("Você só pode apagar os seus estoques.");
   }
 }
 export default PantryServices;

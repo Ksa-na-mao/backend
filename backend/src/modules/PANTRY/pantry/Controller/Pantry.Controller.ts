@@ -101,7 +101,8 @@ class PantryController extends Controller {
 
       const deleted = await pantryServices.deletePantry(pantryId, userId);
 
-      if (deleted) res.status(200).json("Estoque apagado com sucesso!");
+      if (deleted)
+        res.status(200).json({ message: "Estoque apagado com sucesso!" });
       else throw new BaseError("Não foi possível apagar o estoque.");
     } catch (error) {
       next(error);

@@ -6,7 +6,7 @@ class PantryUser extends Model {
   declare id: number;
   declare userId: number;
   declare pantryId: number;
-  declare user?: userInfos;
+  declare User?: userInfos;
   static associate(models: DatabaseModels) {
     PantryUser.belongsTo(models.User, {
       foreignKey: "userId",

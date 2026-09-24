@@ -68,9 +68,6 @@ export const pantrySwagger = {
         403: {
           description: "Tu está tentando entrar em um estoque alternativo",
         },
-        404: {
-          description: "Estoque não encontrado",
-        },
       },
     },
   },
