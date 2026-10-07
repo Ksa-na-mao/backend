@@ -53,7 +53,7 @@ class Controller {
     try {
       const id = Number(req.params.id);
       await this.service.delete(id, req.user!.userId);
-      res.status(201).json("Recurso deletado com sucesso!");
+      res.status(200).json({ message: "Recurso deletado com sucesso!" });
     } catch (error) {
       next(error);
     }

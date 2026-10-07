@@ -12,34 +12,37 @@ class IngredientServices extends Services {
   }
 
   async post(data: ingredient, userId: number) {
-    if (data.name) {
-      const [response, created] = await model.findOrCreate({
-        where: { name: data.name },
-        defaults: { name: data.name, userId: userId },
-      });
-      if (created) return response;
-      else throw new BadRequest("Esse ingrediente já existe!");
+    if (!data.name || data.name.trim().length === 0) {
+      throw new BadRequest("O ingrediente precisa de um nome!");
     }
 
-    throw new BadRequest("O ingrediente precisa de um nome");
+    const [response, created] = await model.findOrCreate({
+      where: { name: data.name },
+      defaults: { name: data.name, userId },
+    });
+
+    if (created) return response;
+
+    throw new BadRequest("Esse ingrediente já existe!");
   }
 
   async updateIngredient(data: ingredient, id: number, userId: number) {
     if (!data.name.trim()) {
       throw new BadRequest("Você precisa mudar algo para atualizar!");
     }
-    console.log(id, userId);
     const isAllowed = await model.findOne({ where: { id, userId } });
-    if (!isAllowed)
+    if (isAllowed === null)
       throw new Forbidden(
         "Você não tem permissão para atualizar esse ingrediente!",
       );
-    if (data.name.trim() !== isAllowed.dataValues.name.trim()) {
-      const response = await model.update(data, { where: { id, userId } });
-      if (response[0] === 0) console.log(response);
-      return response;
+    if (
+      data.name.trim().toLowerCase() ===
+      isAllowed.dataValues.name.trim().toLowerCase()
+    ) {
+      throw new BadRequest("Você precisa mudar algo para atualizar!");
     }
-    throw new BadRequest("Você precisa mudar algo para atualizar!");
+    const response = await model.update(data, { where: { id, userId } });
+    if (response[0] === 0) return response;
   }
 }
 

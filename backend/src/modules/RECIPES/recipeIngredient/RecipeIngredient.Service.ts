@@ -26,7 +26,7 @@ class RecipeIngredientServices extends Services {
       );
     const recipeIngredient = await model.findOne({ where: { id } });
     if (!recipeIngredient) {
-      if (data.ingredientId && data.quantity && data.unit) {
+      if (data.ingredientId && data.quantity > 0 && data.unit) {
         const creating = await model.create({
           recipeId: id,
           ingredientId: data.ingredientId,
@@ -50,13 +50,18 @@ class RecipeIngredientServices extends Services {
         "Você precisa alterar pelo menos um dado para atualizar!",
       );
     }
+
     const realData = {
       recipeId: id,
-      ingredientId: data.ingredientId
-        ? data.ingredientId
-        : recipeIngredient!.ingredientId,
-      quantity: data.quantity ? data.quantity : recipeIngredient!.quantity,
-      unit: data.unit ? data.unit : recipeIngredient!.unit,
+      ingredientId:
+        data.ingredientId !== undefined
+          ? data.ingredientId
+          : recipeIngredient!.ingredientId,
+      quantity:
+        data.quantity !== undefined
+          ? data.quantity
+          : recipeIngredient!.quantity,
+      unit: data.unit !== undefined ? data.unit : recipeIngredient!.unit,
     };
     const rowsUpdated = await recipeIngredient.update(realData, {
       where: { id },

@@ -1,11 +1,13 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from "./index.ts";
 
 class RecipeIngredient extends Model {
+  declare id: number;
   declare recipeId: number;
   declare ingredientId: number;
   declare quantity: number;
   declare unit: string;
-  static associate(models: any) {
+  static associate(models: DatabaseModels) {
     RecipeIngredient.belongsTo(models.Ingredient, {
       foreignKey: "ingredientId",
       as: "ingredient",

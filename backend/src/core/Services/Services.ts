@@ -71,15 +71,10 @@ class Services {
       where: { id, userId },
     });
     if (creator) {
-      try {
-        await dataSource[this.model].destroy({
-          where: { id },
-        });
-
-        return true;
-      } catch (error) {
-        throw new BaseError("Erro no servidor");
-      }
+      await dataSource[this.model].destroy({
+        where: { id },
+      });
+      return;
     }
 
     throw new Forbidden("Você só pode atualizar as suas próprias coisas!");

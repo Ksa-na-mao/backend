@@ -109,7 +109,7 @@ class RecipeServices extends Services {
       ingredients.map(async (ingredient: RecipeIngredientPost) => {
         const userIngredients = await pantryIngredientModel.findOne({
           where: {
-            id: ingredient.id,
+            ingredientId: ingredient.ingredientId,
             pantryId: pantryId,
           },
         });
@@ -125,39 +125,45 @@ class RecipeServices extends Services {
       }),
     );
     if (missing.length === 0) {
-      ingredients.map(async (ingredient: any) => {
-        const userIngredients = await pantryIngredientModel.findOne({
-          where: { id: ingredient.id, pantryId: pantryId },
-        });
-        const diff = userIngredients!.currentQuantity - ingredient.quantity;
-        await pantryIngredientModel.update(
-          {
-            currentQuantity: diff,
-          },
-          {
+      await Promise.all(
+        ingredients.map(async (ingredient: any) => {
+          const userIngredients = await pantryIngredientModel.findOne({
             where: {
-              id: ingredient.id,
+              ingredientId: ingredient.ingredientId,
               pantryId: pantryId,
             },
-          },
-        );
-        if (diff <= userIngredients!.minimumQuantity) {
-          const [lowOn, created] = await shoppingListItemModel.findOrCreate({
-            where: { ingredientId: ingredient.id, shoppingListId: pantryId },
           });
-          if (created) {
-            await notificationModel.create({
-              userId: userId,
-              type: `O alimento: ${ingredient.ingredient.name} está com ${diff}${ingredient.unit}. Logo, ele foi para o seu carrinho de compras!`,
+          const diff = userIngredients!.currentQuantity - ingredient.quantity;
+          await pantryIngredientModel.update(
+            {
+              currentQuantity: diff,
+            },
+            {
+              where: {
+                ingredientId: ingredient.ingredientId,
+                pantryId: pantryId,
+              },
+            },
+          );
+          if (diff <= userIngredients!.minimumQuantity) {
+            const [lowOn, created] = await shoppingListItemModel.findOrCreate({
+              where: { ingredientId: ingredient.ingredientId, pantryId },
+              defaults: { ingredientId: ingredient.ingredientId, pantryId },
             });
-          } else {
-            await notificationModel.create({
-              userId: userId,
-              type: `O alimento: ${ingredient.ingredient.name} que já estava no carrinho está cada vez mais escasso! Tente comprar ele para não ficar precisando! :)`,
-            });
+            if (created) {
+              await notificationModel.create({
+                userId: userId,
+                type: `O alimento: ${ingredient.ingredient.name} está com ${diff}${ingredient.unit}. Logo, ele foi para o seu carrinho de compras!`,
+              });
+            } else {
+              await notificationModel.create({
+                userId: userId,
+                type: `O alimento: ${ingredient.ingredient.name} que já estava no carrinho está cada vez mais escasso! Tente comprar ele para não ficar precisando! :)`,
+              });
+            }
           }
-        }
-      });
+        }),
+      );
       return { message: "Receita feita com sucesso! Bom apetite!" };
     } else throw new BadRequest("Você não consegue fazer essa receita!");
   }

@@ -1,7 +1,11 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
+import { DatabaseModels } from "./index.ts";
 
 class Ingredient extends Model {
-  static associate(models: any) {
+  declare id: number;
+  declare userId: number;
+  declare name: string;
+  static associate(models: DatabaseModels) {
     Ingredient.hasMany(models.PantryIngredient, {
       foreignKey: "ingredientId",
       as: "userIngredient",
